@@ -6,6 +6,7 @@ import {
   BrowserWindow,
   globalShortcut,
   ipcMain,
+  Tray,
 } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
@@ -80,11 +81,16 @@ app.on('ready', async () => {
   }
 });
 
+let tray: Tray | null = null;
 app.whenReady().then(() => {
   // Register global shortcut to show the window
   globalShortcut.register('CommandOrControl+Shift+V', () => {
     ipcMain.emit('show:window');
   });
+  // Make tray icon wait in system's notification area
+  tray = new Tray(path.join(__static, 'icon.png'));
+  tray.setToolTip(app.getName());
+  tray.on('click', () => ipcMain.emit('show:window'));
 });
 
 // Exit cleanly on request from parent process in development mode.
