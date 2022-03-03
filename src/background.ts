@@ -39,6 +39,9 @@ async function createWindow() {
       nodeIntegration: process.env
         .ELECTRON_NODE_INTEGRATION as unknown as boolean,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+
+      // Secure IPC communication
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
   if (process.env.WEBPACK_DEV_SERVER_URL) {

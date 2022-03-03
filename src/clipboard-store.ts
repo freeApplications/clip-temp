@@ -1,11 +1,6 @@
-import { app, clipboard } from 'electron';
+import { app, clipboard, ipcMain } from 'electron';
 import clipboardListener from 'clipboard-event';
-
-type Clipboard = {
-  time: number;
-  text: string;
-  html: string;
-};
+import { Clipboard } from '~/@types';
 
 const histories: Clipboard[] = [];
 app.whenReady().then(() => {
@@ -21,4 +16,8 @@ app.whenReady().then(() => {
 
 app.on('quit', () => {
   clipboardListener.stopListening();
+});
+
+ipcMain.on('order:clipboard', (event) => {
+  event.sender.send('deliver:clipboard', histories);
 });

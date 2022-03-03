@@ -5,6 +5,7 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       externals: ['clipboard-event'],
+      preload: 'src/preload.ts',
     },
   },
   configureWebpack: {
