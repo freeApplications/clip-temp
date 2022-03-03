@@ -1,9 +1,9 @@
-<template>
-  <div id="nav">
-    <router-link to="/">clipboard</router-link> |
-    <router-link to="/template">template</router-link>
-  </div>
-  <router-view />
+<template lang="pug">
+#nav
+  router-link(to="/") clipboard
+  | |
+  router-link(to="/template") template
+router-view
 </template>
 
 <script lang="ts">

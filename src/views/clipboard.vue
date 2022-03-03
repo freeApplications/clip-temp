@@ -1,9 +1,7 @@
-<template>
-  <div class="list">
-    <div v-for="item in histories" :key="item.time" class="item">
-      {{ item.text }}
-    </div>
-  </div>
+<template lang="pug">
+.list
+  .item(v-for="item in histories" :key="item.time")
+    | {{ item.text }}
 </template>
 
 <script lang="ts">
