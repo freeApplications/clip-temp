@@ -1,10 +1,23 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+    <router-link to="/">clipboard</router-link> |
+    <router-link to="/template">template</router-link>
   </div>
   <router-view />
 </template>
+
+<script lang="ts">
+import { defineComponent, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+export default defineComponent({
+  setup() {
+    onMounted(() => {
+      useRouter().push('/');
+    });
+  },
+});
+</script>
 
 <style lang="scss">
 * {
