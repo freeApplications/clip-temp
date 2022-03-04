@@ -1,7 +1,8 @@
 <template lang="pug">
-.list
-  .item(v-for="item in histories" :key="item.time")
-    | {{ item.text }}
+#clipboard
+  .list
+    .item(v-for="item in histories" :key="item.time")
+      | {{ item.text }}
 </template>
 
 <script lang="ts">
@@ -33,9 +34,10 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .list {
-  max-height: calc(100% - 3rem);
+  max-height: calc(100% - 1.5rem);
   overflow-y: auto;
   border: 1px solid lightgray;
+  background-color: white;
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
   .item {
     height: 1.46rem;

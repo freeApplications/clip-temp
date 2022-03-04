@@ -1,4 +1,4 @@
 <template lang="pug">
-.template
+#template
   h3 This is a template page
 </template>
