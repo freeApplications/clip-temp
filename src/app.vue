@@ -9,13 +9,26 @@ router-view.tab-contents
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
+import { HANDLING_KEYS } from '~/renderer-constants';
+import store from '~/store';
 
 export default defineComponent({
   setup() {
+    const onKeyDown = (keyEvent: KeyboardEvent) => {
+      const handlingKeys = Object.values(HANDLING_KEYS);
+      if (handlingKeys.includes(keyEvent.key)) {
+        keyEvent.preventDefault();
+        store.commit('setKeyEvent', keyEvent);
+      }
+    };
     onMounted(() => {
       useRouter().push('/');
+      document.addEventListener('keydown', onKeyDown);
+    });
+    onBeforeUnmount(() => {
+      document.removeEventListener('keydown', onKeyDown);
     });
   },
 });
