@@ -52,5 +52,17 @@ export default defineComponent({
       border-bottom: 1px solid lightgray;
     }
   }
+  &::-webkit-scrollbar {
+    width: 1rem;
+  }
+  &::-webkit-scrollbar-track {
+    margin: -1px;
+    border: 1px solid lightgray;
+    border-right: none;
+    background-color: aliceblue;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: lightsteelblue;
+  }
 }
 </style>
