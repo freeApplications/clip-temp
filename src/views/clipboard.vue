@@ -44,6 +44,14 @@ export default defineComponent({
         }
         const maxIndex = state.histories.length - 1;
         switch (keyEvent.key) {
+          case HANDLING_KEYS.ENTER: {
+            const selectedItem = histories.value[state.selectIndex];
+            const originIndex = state.histories.findIndex(
+              (item) => item === selectedItem
+            );
+            api.pasteClipboard(originIndex);
+            return;
+          }
           case HANDLING_KEYS.UP:
             state.selectIndex > 0
               ? state.selectIndex--

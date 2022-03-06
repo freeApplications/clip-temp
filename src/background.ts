@@ -116,3 +116,9 @@ ipcMain.on('show:window', async () => {
   await createWindow();
   win?.show();
 });
+ipcMain.on('close:window', (event, action?: () => void) => {
+  if (action) {
+    win?.once('closed', action);
+  }
+  win?.close();
+});
