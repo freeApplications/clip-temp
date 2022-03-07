@@ -4,15 +4,26 @@ import { Clipboard } from '~/@types';
 import robot from 'robotjs';
 
 const histories: Clipboard[] = [];
+const upsertHistory = () => {
+  const current = {
+    time: Date.now(),
+    text: clipboard.readText(),
+    html: clipboard.readHTML(),
+  };
+  const same = histories.find(
+    (item) => item.text === current.text && item.html === current.html
+  );
+  if (same) {
+    // When exist same item, update timestamp
+    same.time = current.time;
+  } else {
+    histories.push(current);
+  }
+};
+
 app.whenReady().then(() => {
   clipboardListener.startListening();
-  clipboardListener.on('change', () => {
-    histories.push({
-      time: Date.now(),
-      text: clipboard.readText(),
-      html: clipboard.readHTML(),
-    });
-  });
+  clipboardListener.on('change', upsertHistory);
 });
 
 app.on('quit', () => {
