@@ -4,20 +4,35 @@ import { Clipboard } from '~/@types';
 import robot from 'robotjs';
 
 const histories: Clipboard[] = [];
+let recent: Clipboard | null = null;
 const upsertHistory = () => {
   const current = {
     time: Date.now(),
     text: clipboard.readText(),
     html: clipboard.readHTML(),
   };
+  if (
+    recent !== null &&
+    current.time - recent.time <= 500 &&
+    (recent.text.startsWith(current.text) ||
+      recent.text.endsWith(current.text) ||
+      current.text.startsWith(recent.text) ||
+      current.text.endsWith(recent.text))
+  ) {
+    // When within 500 ms from recent time and text is nearly equal, overwrite recent item
+    Object.assign(recent, current);
+    return;
+  }
   const same = histories.find(
     (item) => item.text === current.text && item.html === current.html
   );
   if (same) {
     // When exist same item, update timestamp
     same.time = current.time;
+    recent = same;
   } else {
     histories.push(current);
+    recent = current;
   }
 };
 
