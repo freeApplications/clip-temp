@@ -6,6 +6,7 @@
       :key="item.time"
       :class="{ selected: selectIndex === index }"
       @click="selectIndex = index"
+      @dblclick="paste"
     )
       | {{ item.text }}
 </template>
@@ -25,17 +26,34 @@ export default defineComponent({
     const { api } = window;
     api.orderClipboard();
     api.deliverClipboard((histories) => (state.histories = histories));
+
+    // data
     const state = reactive<State>({
       histories: [],
       selectIndex: 0,
     });
     const { selectIndex } = toRefs(state);
+
+    // refs
     const list = ref<HTMLDivElement>();
+
+    // computed
     const histories = computed(() => {
       return state.histories.slice().sort((a, b) => {
         return b.time - a.time;
       });
     });
+
+    // methods
+    const paste = () => {
+      const selectedItem = histories.value[state.selectIndex];
+      const originIndex = state.histories.findIndex(
+        (item) => item === selectedItem
+      );
+      api.pasteClipboard(originIndex);
+    };
+
+    // watch
     watch(
       () => store.state.keyEvent,
       (keyEvent) => {
@@ -44,14 +62,9 @@ export default defineComponent({
         }
         const maxIndex = state.histories.length - 1;
         switch (keyEvent.key) {
-          case HANDLING_KEYS.ENTER: {
-            const selectedItem = histories.value[state.selectIndex];
-            const originIndex = state.histories.findIndex(
-              (item) => item === selectedItem
-            );
-            api.pasteClipboard(originIndex);
+          case HANDLING_KEYS.ENTER:
+            paste();
             return;
-          }
           case HANDLING_KEYS.UP:
             state.selectIndex > 0
               ? state.selectIndex--
@@ -83,10 +96,16 @@ export default defineComponent({
         }
       }
     );
+
     return {
-      histories,
+      // data
       selectIndex,
+      // refs
       list,
+      // computed
+      histories,
+      // methods
+      paste,
     };
   },
 });
