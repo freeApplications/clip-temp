@@ -1,6 +1,13 @@
 <template lang="pug">
-#clipboard
-  .list(ref="list")
+#clipboard(
+  :class="{ 'cursor-resize': isResizing }"
+  @mousemove="resize"
+  @mouseup="isResizing = false"
+)
+  .list(
+    ref="list"
+    :style="{ height: `calc(50% + ${adjustHeight}px)` }"
+  )
     .item(
       v-for="(item, index) in histories"
       :key="item.time"
@@ -9,8 +16,12 @@
       @dblclick="paste"
     )
       | {{ item.text }}
-  .separator
-  .text
+  .separator.cursor-resize(
+    @mousedown="isResizing = true"
+  )
+  .text(
+    :style="{ height: `calc(50% - ${adjustHeight}px)` }"
+  )
     template(
       v-if="histories.length > selectIndex"
     )
@@ -26,6 +37,8 @@ import store from '~/store';
 type State = {
   histories: Clipboard[];
   selectIndex: number;
+  adjustHeight: number;
+  isResizing: boolean;
 };
 export default defineComponent({
   setup() {
@@ -37,8 +50,10 @@ export default defineComponent({
     const state = reactive<State>({
       histories: [],
       selectIndex: 0,
+      adjustHeight: 0,
+      isResizing: false,
     });
-    const { selectIndex } = toRefs(state);
+    const { selectIndex, adjustHeight, isResizing } = toRefs(state);
 
     // refs
     const list = ref<HTMLDivElement>();
@@ -57,6 +72,14 @@ export default defineComponent({
         (item) => item === selectedItem
       );
       api.pasteClipboard(originIndex);
+    };
+    const resize = (event: MouseEvent) => {
+      if (event.buttons === 0 || !state.isResizing) {
+        state.isResizing = false;
+        return;
+      }
+      event.preventDefault();
+      state.adjustHeight += event.movementY;
     };
 
     // watch
@@ -106,12 +129,15 @@ export default defineComponent({
     return {
       // data
       selectIndex,
+      adjustHeight,
+      isResizing,
       // refs
       list,
       // computed
       histories,
       // methods
       paste,
+      resize,
     };
   },
 });
@@ -121,10 +147,10 @@ export default defineComponent({
 #clipboard {
   display: flex;
   flex-flow: column;
+  cursor: default;
 }
 .list,
 .text {
-  flex-basis: 50%;
   overflow-y: auto;
   border: 1px solid lightgray;
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
@@ -149,6 +175,7 @@ export default defineComponent({
   }
 }
 .list {
+  min-height: 1.5rem;
   background-color: lightgray;
   .item {
     height: 1.46rem;
@@ -173,6 +200,7 @@ export default defineComponent({
   background-color: whitesmoke;
 }
 .text {
+  min-height: 1.75rem;
   padding: 0.25rem 0.5rem;
   overflow-x: auto;
   background-color: white;
@@ -180,5 +208,8 @@ export default defineComponent({
   line-height: 1.5;
   text-align: left;
   white-space: pre;
+}
+.cursor-resize {
+  cursor: ns-resize !important;
 }
 </style>
