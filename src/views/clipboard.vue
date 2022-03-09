@@ -9,6 +9,12 @@
       @dblclick="paste"
     )
       | {{ item.text }}
+  .separator
+  .text
+    template(
+      v-if="histories.length > selectIndex"
+    )
+      | {{ histories[selectIndex].text }}
 </template>
 
 <script lang="ts">
@@ -112,17 +118,44 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.list {
-  max-height: calc(100% - 1.5rem);
+#clipboard {
+  display: flex;
+  flex-flow: column;
+}
+.list,
+.text {
+  flex-basis: 50%;
   overflow-y: auto;
   border: 1px solid lightgray;
-  background-color: white;
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
+  &::-webkit-scrollbar {
+    width: 1rem;
+    height: 1rem;
+  }
+  &::-webkit-scrollbar-track {
+    margin: -1px;
+    border-top: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    background-color: aliceblue;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: lightsteelblue;
+  }
+  &::-webkit-scrollbar-corner {
+    margin: -2px;
+    border-top: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    background-color: aliceblue;
+  }
+}
+.list {
+  background-color: lightgray;
   .item {
     height: 1.46rem;
     padding: 0.25rem 0.5rem;
     overflow-x: hidden;
     overflow-y: visible;
+    background-color: white;
     font-size: 0.75rem;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -134,17 +167,18 @@ export default defineComponent({
       background-color: skyblue;
     }
   }
-  &::-webkit-scrollbar {
-    width: 1rem;
-  }
-  &::-webkit-scrollbar-track {
-    margin: -1px;
-    border: 1px solid lightgray;
-    border-right: none;
-    background-color: aliceblue;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: lightsteelblue;
-  }
+}
+.separator {
+  height: 0.5rem;
+  background-color: whitesmoke;
+}
+.text {
+  padding: 0.25rem 0.5rem;
+  overflow-x: auto;
+  background-color: white;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
+  white-space: pre;
 }
 </style>

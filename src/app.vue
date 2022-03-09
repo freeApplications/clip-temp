@@ -98,7 +98,7 @@ body {
   }
 }
 .tab-contents {
-  height: 100%;
+  height: calc(100% - 1.5rem);
   padding: 0.5rem;
 }
 </style>
