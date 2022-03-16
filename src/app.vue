@@ -35,7 +35,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-$font-color: #2c3e50;
+@import 'assets/css/colors';
 
 * {
   box-sizing: border-box;

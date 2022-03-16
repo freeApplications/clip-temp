@@ -26,6 +26,11 @@
       v-if="histories.length > selectIndex"
     )
       | {{ histories[selectIndex].text }}
+  .footer
+    button(
+      :disabled="histories.length <= selectIndex"
+      @click="paste"
+    ) Paste
 </template>
 
 <script lang="ts">
@@ -144,6 +149,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import '../assets/css/colors';
+
 #clipboard {
   display: flex;
   flex-flow: column;
@@ -201,6 +208,7 @@ export default defineComponent({
 }
 .text {
   min-height: 1.75rem;
+  margin-bottom: 0.5rem;
   padding: 0.25rem 0.5rem;
   overflow-x: auto;
   background-color: white;
@@ -208,6 +216,29 @@ export default defineComponent({
   line-height: 1.5;
   text-align: left;
   white-space: pre;
+}
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  transform: scale(1.25, 1);
+  transform-origin: top right;
+  button {
+    padding: 0.125rem 0.8rem;
+    border: 1px solid lightgray;
+    background-color: #e4e4e4;
+    color: $font-color;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    &:not(:disabled):hover {
+      background-color: #dae4ee;
+      border-color: lightgray;
+    }
+  }
 }
 .cursor-resize {
   cursor: ns-resize !important;
