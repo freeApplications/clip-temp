@@ -95,9 +95,9 @@ export default defineComponent({
     watch(
       () => store.state.keyEvent,
       (keyEvent) => {
-        if (state.histories.length <= state.selectIndex || keyEvent === null) {
-          return;
-        }
+        if (keyEvent === null) return;
+        if (keyEvent.key === HANDLING_KEYS.ESCAPE) return closeWindow();
+        if (state.histories.length <= state.selectIndex) return;
         const maxIndex = state.histories.length - 1;
         switch (keyEvent.key) {
           case HANDLING_KEYS.ENTER:
