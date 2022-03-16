@@ -6,6 +6,7 @@ declare global {
       orderClipboard: () => void;
       deliverClipboard: (action: (histories: Clipboard[]) => void) => void;
       pasteClipboard: (index: number) => void;
+      closeWindow: () => void;
     };
   }
 }

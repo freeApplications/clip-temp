@@ -31,6 +31,9 @@
       :disabled="histories.length <= selectIndex"
       @click="paste"
     ) Paste
+    button(
+      @click="closeWindow"
+    ) Cancel
 </template>
 
 <script lang="ts">
@@ -86,6 +89,7 @@ export default defineComponent({
       event.preventDefault();
       state.adjustHeight += event.movementY;
     };
+    const closeWindow = api.closeWindow;
 
     // watch
     watch(
@@ -143,6 +147,7 @@ export default defineComponent({
       // methods
       paste,
       resize,
+      closeWindow,
     };
   },
 });
@@ -237,6 +242,9 @@ export default defineComponent({
     &:not(:disabled):hover {
       background-color: #dae4ee;
       border-color: lightgray;
+    }
+    &:not(:last-child) {
+      margin-right: 0.5rem;
     }
   }
 }
