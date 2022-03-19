@@ -28,7 +28,10 @@
       @click="selectIndex = index"
       @dblclick="paste"
     )
-      | {{ item.text }}
+      span.parts(
+        v-for="partOfText in item.text.parts"
+        :class="{ highlight: partOfText.isMatched }"
+      ) {{ partOfText }}
   .separator.cursor-resize(
     @mousedown="isResizing = true"
   )
@@ -38,7 +41,10 @@
     template(
       v-if="histories.length > selectIndex"
     )
-      | {{ histories[selectIndex].text }}
+      span.parts(
+        v-for="partOfText in histories[selectIndex].text.parts"
+        :class="{ highlight: partOfText.isMatched }"
+      ) {{ partOfText }}
   .footer
     button(
       :disabled="histories.length <= selectIndex"
@@ -62,12 +68,13 @@ import {
 } from 'vue';
 import IconFilter from '~/components/icons/filter.vue';
 import IconClear from '~/components/icons/clear.vue';
-import { Clipboard } from '~/@types';
+import Clipboard from '~/models/clipboard';
+import { Clipboard as OriginClipboard } from '~/@types';
 import { HANDLING_KEYS } from '~/renderer-constants';
 import store from '~/store';
 
 type State = {
-  histories: Clipboard[];
+  histories: OriginClipboard[];
   filterWord: string;
   selectIndex: number;
   adjustHeight: number;
@@ -98,17 +105,11 @@ export default defineComponent({
     const list = ref<HTMLDivElement>();
 
     // computed
-    const histories = computed(() => {
-      const pattern = state.filterWord
-        .split('')
-        .map((char) => char.replace(/[.*+\-?^${}()|[\]\\]/, '\\$&'))
-        .join('.*');
-      const regexp = new RegExp(pattern, 'i');
+    const histories = computed<Clipboard[]>(() => {
       return state.histories
-        .filter(({ text }) => text.match(regexp))
-        .sort((a, b) => {
-          return b.time - a.time;
-        });
+        .map((item) => new Clipboard(item))
+        .filter((item) => item.match(state.filterWord))
+        .sort((a, b) => a.compareTo(b));
     });
 
     // methods
@@ -119,8 +120,8 @@ export default defineComponent({
     };
     const paste = () => {
       const selectedItem = histories.value[state.selectIndex];
-      const originIndex = state.histories.findIndex(
-        (item) => item === selectedItem
+      const originIndex = state.histories.findIndex((item) =>
+        selectedItem.equals(item)
       );
       api.pasteClipboard(originIndex);
     };
@@ -237,6 +238,23 @@ export default defineComponent({
   overflow-y: auto;
   border: 1px solid lightgray;
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
+  .parts {
+    position: relative;
+    z-index: 0;
+    &.highlight {
+      &::after {
+        position: absolute;
+        top: -2px;
+        right: -1px;
+        bottom: -2px;
+        left: -1px;
+        z-index: -1;
+        border-radius: 3px;
+        background-color: gold;
+        content: '';
+      }
+    }
+  }
   &::-webkit-scrollbar {
     width: 1rem;
     height: 1rem;
