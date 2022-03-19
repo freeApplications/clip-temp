@@ -4,6 +4,19 @@
   @mousemove="resize"
   @mouseup="isResizing = false"
 )
+  .header
+    icon-filter
+    input.filter-word(
+      ref="input"
+      type="text"
+      spellcheck="false"
+      v-model="filterWord"
+      @blur="fixingFocus"
+    )
+    icon-clear(
+      :class="{ invisible: !filterWord.length }"
+      @click="filterWord = ''"
+    )
   .list(
     ref="list"
     :style="{ height: `calc(50% + ${adjustHeight}px)` }"
@@ -37,18 +50,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref, computed, watch } from 'vue';
+import {
+  defineComponent,
+  reactive,
+  toRefs,
+  ref,
+  computed,
+  watch,
+  onMounted,
+  nextTick,
+} from 'vue';
+import IconFilter from '~/components/icons/filter.vue';
+import IconClear from '~/components/icons/clear.vue';
 import { Clipboard } from '~/@types';
 import { HANDLING_KEYS } from '~/renderer-constants';
 import store from '~/store';
 
 type State = {
   histories: Clipboard[];
+  filterWord: string;
   selectIndex: number;
   adjustHeight: number;
   isResizing: boolean;
 };
 export default defineComponent({
+  components: {
+    IconFilter,
+    IconClear,
+  },
   setup() {
     const { api } = window;
     api.orderClipboard();
@@ -57,23 +86,37 @@ export default defineComponent({
     // data
     const state = reactive<State>({
       histories: [],
+      filterWord: '',
       selectIndex: 0,
       adjustHeight: 0,
       isResizing: false,
     });
-    const { selectIndex, adjustHeight, isResizing } = toRefs(state);
+    const { filterWord, selectIndex, adjustHeight, isResizing } = toRefs(state);
 
     // refs
+    const input = ref<HTMLDivElement>();
     const list = ref<HTMLDivElement>();
 
     // computed
     const histories = computed(() => {
-      return state.histories.slice().sort((a, b) => {
-        return b.time - a.time;
-      });
+      const pattern = state.filterWord
+        .split('')
+        .map((char) => char.replace(/[.*+\-?^${}()|[\]\\]/, '\\$&'))
+        .join('.*');
+      const regexp = new RegExp(pattern, 'i');
+      return state.histories
+        .filter(({ text }) => text.match(regexp))
+        .sort((a, b) => {
+          return b.time - a.time;
+        });
     });
 
     // methods
+    const fixingFocus = () => {
+      const refsInput = input.value;
+      if (!refsInput) return;
+      refsInput.focus();
+    };
     const paste = () => {
       const selectedItem = histories.value[state.selectIndex];
       const originIndex = state.histories.findIndex(
@@ -95,10 +138,10 @@ export default defineComponent({
     watch(
       () => store.state.keyEvent,
       (keyEvent) => {
-        if (keyEvent === null) return;
+        if (keyEvent === null) return fixingFocus();
         if (keyEvent.key === HANDLING_KEYS.ESCAPE) return closeWindow();
-        if (state.histories.length <= state.selectIndex) return;
-        const maxIndex = state.histories.length - 1;
+        if (histories.value.length <= state.selectIndex) return;
+        const maxIndex = histories.value.length - 1;
         switch (keyEvent.key) {
           case HANDLING_KEYS.ENTER:
             paste();
@@ -134,17 +177,26 @@ export default defineComponent({
         }
       }
     );
+    watch(filterWord, () => (state.selectIndex = 0));
+
+    // lifecycle
+    onMounted(() => {
+      nextTick(() => fixingFocus());
+    });
 
     return {
       // data
+      filterWord,
       selectIndex,
       adjustHeight,
       isResizing,
       // refs
+      input,
       list,
       // computed
       histories,
       // methods
+      fixingFocus,
       paste,
       resize,
       closeWindow,
@@ -160,6 +212,25 @@ export default defineComponent({
   display: flex;
   flex-flow: column;
   cursor: default;
+}
+.header {
+  display: flex;
+  margin-bottom: 0.5rem;
+  * {
+    &:not(:last-child) {
+      margin-right: 0.25rem;
+    }
+  }
+  .filter-word {
+    width: 100%;
+    padding: 0;
+    border: none;
+    background-color: inherit;
+    font-size: 0.75rem;
+    font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
+    cursor: default;
+    caret-color: transparent;
+  }
 }
 .list,
 .text {
@@ -250,5 +321,8 @@ export default defineComponent({
 }
 .cursor-resize {
   cursor: ns-resize !important;
+}
+.invisible {
+  visibility: hidden;
 }
 </style>
