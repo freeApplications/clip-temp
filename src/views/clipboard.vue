@@ -41,6 +41,10 @@
     template(
       v-if="histories.length && histories.length > selectIndex"
     )
+      .actions
+        icon-remove(
+          @click="remove"
+        )
       span.parts(
         v-for="partOfText in histories[selectIndex].text.parts"
         :class="{ highlight: partOfText.isMatched }"
@@ -68,6 +72,7 @@ import {
 } from 'vue';
 import IconFilter from '~/components/icons/filter.vue';
 import IconClear from '~/components/icons/clear.vue';
+import IconRemove from '~/components/icons/remove.vue';
 import Clipboard from '~/models/clipboard';
 import { Clipboard as OriginClipboard } from '~/@types';
 import { HANDLING_KEYS } from '~/renderer-constants';
@@ -84,6 +89,7 @@ export default defineComponent({
   components: {
     IconFilter,
     IconClear,
+    IconRemove,
   },
   setup() {
     const { api } = window;
@@ -209,6 +215,7 @@ export default defineComponent({
       // methods
       fixingFocus,
       paste,
+      remove,
       resize,
       closeWindow,
     };
@@ -320,6 +327,26 @@ export default defineComponent({
   line-height: 1.5;
   text-align: left;
   white-space: pre;
+  .actions {
+    opacity: 0;
+    position: sticky;
+    top: 0.125rem;
+    z-index: 1;
+    height: 0;
+    margin-right: -0.25rem;
+    text-align: right;
+  }
+  &:hover {
+    .actions {
+      opacity: 0.5;
+      svg {
+        background-color: white;
+      }
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+  }
 }
 .footer {
   display: flex;
