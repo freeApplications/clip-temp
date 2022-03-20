@@ -39,7 +39,7 @@
     :style="{ height: `calc(50% - ${adjustHeight}px)` }"
   )
     template(
-      v-if="histories.length > selectIndex"
+      v-if="histories.length && histories.length > selectIndex"
     )
       span.parts(
         v-for="partOfText in histories[selectIndex].text.parts"
@@ -111,6 +111,10 @@ export default defineComponent({
         .filter((item) => item.match(state.filterWord))
         .sort((a, b) => a.compareTo(b));
     });
+    const originIndex = computed(() => {
+      const selectedItem = histories.value[state.selectIndex];
+      return state.histories.findIndex((item) => selectedItem.equals(item));
+    });
 
     // methods
     const fixingFocus = () => {
@@ -119,11 +123,14 @@ export default defineComponent({
       refsInput.focus();
     };
     const paste = () => {
-      const selectedItem = histories.value[state.selectIndex];
-      const originIndex = state.histories.findIndex((item) =>
-        selectedItem.equals(item)
-      );
-      api.pasteClipboard(originIndex);
+      api.pasteClipboard(originIndex.value);
+    };
+    const remove = () => {
+      api.removeClipboard(originIndex.value);
+      state.histories.splice(originIndex.value, 1);
+      if (histories.value.length <= state.selectIndex) {
+        state.selectIndex = histories.value.length - 1;
+      }
     };
     const resize = (event: MouseEvent) => {
       if (event.buttons === 0 || !state.isResizing) {
@@ -146,6 +153,9 @@ export default defineComponent({
         switch (keyEvent.key) {
           case HANDLING_KEYS.ENTER:
             paste();
+            return;
+          case HANDLING_KEYS.DELETE:
+            remove();
             return;
           case HANDLING_KEYS.UP:
             state.selectIndex > 0

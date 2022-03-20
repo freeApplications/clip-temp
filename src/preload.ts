@@ -14,6 +14,9 @@ contextBridge.exposeInMainWorld('api', {
   pasteClipboard: (index: number) => {
     ipcRenderer.send('paste:clipboard', index);
   },
+  removeClipboard: (index: number) => {
+    ipcRenderer.send('remove:clipboard', index);
+  },
   closeWindow: () => {
     ipcRenderer.send('close:window');
   },

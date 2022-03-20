@@ -3,4 +3,5 @@ export const HANDLING_KEYS = {
   UP: 'ArrowUp',
   DOWN: 'ArrowDown',
   ESCAPE: 'Escape',
+  DELETE: 'Delete',
 };

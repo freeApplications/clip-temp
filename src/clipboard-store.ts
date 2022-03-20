@@ -62,3 +62,6 @@ ipcMain.on('paste:clipboard', (event, index: number) => {
     }
   });
 });
+ipcMain.on('remove:clipboard', (event, index: number) => {
+  histories.splice(index, 1);
+});
