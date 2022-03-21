@@ -17,6 +17,13 @@ contextBridge.exposeInMainWorld('api', {
   removeClipboard: (index: number) => {
     ipcRenderer.send('remove:clipboard', index);
   },
+  showEditMenu: (pasteAction: () => void, removeAction: () => void) => {
+    ipcRenderer.removeAllListeners('paste:edit-menu');
+    ipcRenderer.removeAllListeners('remove:edit-menu');
+    ipcRenderer.send('show:edit-menu');
+    ipcRenderer.on('paste:edit-menu', pasteAction);
+    ipcRenderer.on('remove:edit-menu', removeAction);
+  },
   closeWindow: () => {
     ipcRenderer.send('close:window');
   },
