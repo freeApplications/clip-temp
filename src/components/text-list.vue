@@ -35,7 +35,7 @@
       ) {{ partOfText }}
     .empty(v-if="isEmpty")
       template(v-if="filterWord.length") No matches found
-      template(v-else) Clipboard history is empty
+      template(v-else) {{ isClipboard ? 'Clipboard history' : 'Template' }} is empty
   .separator.cursor-resize(
     @mousedown="isResizing = true"
   )
@@ -79,6 +79,7 @@ import IconRemove from '~/components/icons/remove.vue';
 import Clipboard from '~/models/clipboard';
 import { HANDLING_KEYS } from '~/renderer-constants';
 import store from '~/store';
+import { useRoute } from 'vue-router';
 
 type State = {
   filterWord: string;
@@ -117,6 +118,9 @@ export default defineComponent({
     const list = ref<HTMLDivElement>();
 
     // computed
+    const isClipboard = computed(() => {
+      return useRoute().name === 'clipboard';
+    });
     const listOfText = computed<Clipboard[]>(() => {
       return props.list
         .filter((item) => item.match(state.filterWord))
@@ -234,6 +238,7 @@ export default defineComponent({
       'refs.input': input,
       'refs.list': list,
       // computed
+      isClipboard,
       listOfText,
       isEmpty,
       isSelected,
