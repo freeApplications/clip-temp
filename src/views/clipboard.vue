@@ -259,12 +259,13 @@ export default defineComponent({
 .list,
 .text {
   overflow-y: auto;
-  border: 1px solid lightgray;
+  border: 1px solid;
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
   .parts {
     position: relative;
     z-index: 0;
     &.highlight {
+      color: $highlight-font;
       &::after {
         position: absolute;
         top: -2px;
@@ -273,7 +274,6 @@ export default defineComponent({
         left: -1px;
         z-index: -1;
         border-radius: 3px;
-        background-color: gold;
         content: '';
       }
     }
@@ -284,51 +284,39 @@ export default defineComponent({
   }
   &::-webkit-scrollbar-track {
     margin: -1px;
-    border-top: 1px solid lightgray;
-    border-left: 1px solid lightgray;
-    background-color: aliceblue;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: lightsteelblue;
+    border-top: 1px solid;
+    border-left: 1px solid;
   }
   &::-webkit-scrollbar-corner {
     margin: -2px;
-    border-top: 1px solid lightgray;
-    border-left: 1px solid lightgray;
-    background-color: aliceblue;
+    border-top: 1px solid;
+    border-left: 1px solid;
   }
 }
 .list {
   min-height: 1.5rem;
-  background-color: lightgray;
   .item {
     height: 1.46rem;
     padding: 0.25rem 0.5rem;
     overflow-x: hidden;
     overflow-y: visible;
-    background-color: white;
     font-size: 0.75rem;
     white-space: nowrap;
     text-overflow: ellipsis;
     text-align: left;
     &:not(:last-child) {
-      border-bottom: 1px solid lightgray;
-    }
-    &.selected {
-      background-color: skyblue;
+      border-bottom: 1px solid;
     }
   }
 }
 .separator {
   height: 0.5rem;
-  background-color: whitesmoke;
 }
 .text {
   min-height: 1.75rem;
   margin-bottom: 0.5rem;
   padding: 0.25rem 0.5rem;
   overflow-x: auto;
-  background-color: white;
   font-size: 0.75rem;
   line-height: 1.5;
   text-align: left;
@@ -345,9 +333,6 @@ export default defineComponent({
   &:hover {
     .actions {
       opacity: 0.5;
-      svg {
-        background-color: white;
-      }
       &:hover {
         opacity: 0.9;
       }
@@ -361,19 +346,13 @@ export default defineComponent({
   transform-origin: top right;
   button {
     padding: 0.125rem 0.8rem;
-    border: 1px solid lightgray;
-    background-color: #e4e4e4;
-    color: $font-color;
+    border: 1px solid;
     border-radius: 4px;
     font-size: 0.75rem;
     cursor: pointer;
     &:disabled {
       opacity: 0.5;
       cursor: default;
-    }
-    &:not(:disabled):hover {
-      background-color: #dae4ee;
-      border-color: lightgray;
     }
     &:not(:last-child) {
       margin-right: 0.5rem;
@@ -385,5 +364,114 @@ export default defineComponent({
 }
 .invisible {
   visibility: hidden;
+}
+
+@media (prefers-color-scheme: light) {
+  .header .filter-word {
+    color: $light-font;
+  }
+  .list,
+  .text {
+    border-color: $light-border;
+    .parts.highlight::after {
+      background-color: $light-highlight;
+    }
+    &::-webkit-scrollbar-track {
+      border-top-color: $light-border;
+      border-left-color: $light-border;
+      background-color: $light-scrollbar-track;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $light-scrollbar;
+    }
+    &::-webkit-scrollbar-corner {
+      border-top-color: $light-border;
+      border-left-color: $light-border;
+      background-color: $light-scrollbar-track;
+    }
+  }
+  .list {
+    background-color: $light-background-empty;
+    .item {
+      background-color: $light-background-main;
+      &:not(:last-child) {
+        border-bottom-color: $light-border;
+      }
+      &.selected {
+        background-color: $light-selected;
+      }
+    }
+  }
+  .separator {
+    background-color: $light-background;
+  }
+  .text {
+    background-color: $light-background-main;
+    &:hover .actions svg {
+      background-color: $light-background-main;
+    }
+  }
+  .footer button {
+    border-color: $light-border;
+    background-color: $light-button;
+    color: $light-font;
+    &:not(:disabled):hover {
+      background-color: $light-button-hover;
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .header .filter-word {
+    color: $dark-font;
+  }
+  .list,
+  .text {
+    border-color: $dark-border;
+    .parts.highlight::after {
+      background-color: $dark-highlight;
+    }
+    &::-webkit-scrollbar-track {
+      border-top-color: $dark-border;
+      border-left-color: $dark-border;
+      background-color: $dark-scrollbar-track;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $dark-scrollbar;
+    }
+    &::-webkit-scrollbar-corner {
+      border-top-color: $dark-border;
+      border-left-color: $dark-border;
+      background-color: $dark-scrollbar-track;
+    }
+  }
+  .list {
+    background-color: $dark-background-empty;
+    .item {
+      background-color: $dark-background-main;
+      &:not(:last-child) {
+        border-bottom-color: $dark-border;
+      }
+      &.selected {
+        background-color: $dark-selected;
+      }
+    }
+  }
+  .separator {
+    background-color: $dark-background;
+  }
+  .text {
+    background-color: $dark-background-main;
+    &:hover .actions svg {
+      background-color: $dark-background-main;
+    }
+  }
+  .footer button {
+    border-color: $dark-border;
+    background-color: $dark-button;
+    color: $dark-font;
+    &:not(:disabled):hover {
+      background-color: $dark-button-hover;
+    }
+  }
 }
 </style>

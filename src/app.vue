@@ -48,8 +48,6 @@ body {
 }
 #app {
   height: 100%;
-  background-color: whitesmoke;
-  color: $font-color;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -61,8 +59,7 @@ body {
   align-items: center;
   height: 1.5rem;
   margin: 0;
-  border-bottom: 1px solid lightgray;
-  background-color: white;
+  border-bottom: 1px solid;
   .tab-list {
     display: flex;
     justify-content: space-between;
@@ -80,18 +77,14 @@ body {
         width: 100%;
         height: 100%;
         padding: 3px;
-        color: dimgray;
         font-weight: bold;
         text-decoration: none;
         &.router-link-exact-active,
         &:hover {
           padding: 2px;
           margin-bottom: 2px;
-          border: 1px solid lightgray;
-          border-bottom-color: whitesmoke;
+          border: 1px solid;
           border-radius: 0.5rem 0.5rem 0 0;
-          background-color: whitesmoke;
-          color: $font-color;
         }
       }
     }
@@ -100,5 +93,46 @@ body {
 .tab-contents {
   height: calc(100% - 1.5rem);
   padding: 0.5rem;
+}
+
+@media (prefers-color-scheme: light) {
+  #app {
+    background-color: $light-background;
+    color: $light-font;
+  }
+  #nav {
+    border-bottom-color: $light-border;
+    background-color: $light-background-main;
+    .tab-list .tab-item a {
+      color: $light-inactive-link;
+      &.router-link-exact-active,
+      &:hover {
+        border-color: $light-border;
+        border-bottom-color: $light-background;
+        background-color: $light-background;
+        color: $light-font;
+      }
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  #app {
+    background-color: $dark-background;
+    color: $dark-font;
+  }
+  #nav {
+    border-bottom-color: $dark-border;
+    background-color: $dark-background-main;
+    .tab-list .tab-item a {
+      color: $dark-inactive-link;
+      &.router-link-exact-active,
+      &:hover {
+        border-color: $dark-border;
+        border-bottom-color: $dark-background;
+        background-color: $dark-background;
+        color: $dark-font;
+      }
+    }
+  }
 }
 </style>
