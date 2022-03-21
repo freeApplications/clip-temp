@@ -8,7 +8,10 @@ export default class FilterableText {
     this.parts = [new PartOfText(value)];
   }
   match(filterWord: string): boolean {
-    if (filterWord === '') return true;
+    if (filterWord === '') {
+      this.parts = [new PartOfText(this.value)];
+      return true;
+    }
     this.parts = [];
     const match = (start: number, filterWord: string): boolean => {
       const value = this.value.slice(start);
@@ -21,7 +24,7 @@ export default class FilterableText {
         word = word.slice(0, word.length - 1);
       }
       if (index === -1) {
-        this.parts = [];
+        this.parts = [new PartOfText(this.value)];
         return false;
       }
       const end = index + word.length;
