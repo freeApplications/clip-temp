@@ -33,15 +33,16 @@
         v-for="partOfText in item.text.parts"
         :class="{ highlight: partOfText.isMatched }"
       ) {{ partOfText }}
+    .empty(v-if="isEmpty")
+      template(v-if="filterWord.length") No matches found
+      template(v-else) Clipboard history is empty
   .separator.cursor-resize(
     @mousedown="isResizing = true"
   )
   .text(
     :style="{ height: `calc(50% - ${adjustHeight}px)` }"
   )
-    template(
-      v-if="histories.length && histories.length > selectIndex"
-    )
+    template(v-if="isSelected")
       .actions
         icon-remove(
           @click="remove"
@@ -52,7 +53,7 @@
       ) {{ partOfText }}
   .footer
     button(
-      :disabled="histories.length <= selectIndex"
+      :disabled="!isSelected"
       @click="paste"
     ) Paste
     button(
@@ -118,6 +119,10 @@ export default defineComponent({
         .filter((item) => item.match(state.filterWord))
         .sort((a, b) => a.compareTo(b));
     });
+    const isEmpty = computed(() => !histories.value.length);
+    const isSelected = computed(
+      () => !isEmpty.value && histories.value.length > state.selectIndex
+    );
     const originIndex = computed(() => {
       const selectedItem = histories.value[state.selectIndex];
       return state.histories.findIndex((item) => selectedItem.equals(item));
@@ -135,7 +140,7 @@ export default defineComponent({
     const remove = () => {
       api.removeClipboard(originIndex.value);
       state.histories.splice(originIndex.value, 1);
-      if (histories.value.length <= state.selectIndex) {
+      if (isSelected.value) {
         state.selectIndex = histories.value.length - 1;
       }
     };
@@ -159,7 +164,7 @@ export default defineComponent({
       (keyEvent) => {
         if (keyEvent === null) return fixingFocus();
         if (keyEvent.key === HANDLING_KEYS.ESCAPE) return closeWindow();
-        if (histories.value.length <= state.selectIndex) return;
+        if (!isSelected.value) return;
         const maxIndex = histories.value.length - 1;
         switch (keyEvent.key) {
           case HANDLING_KEYS.ENTER:
@@ -217,6 +222,8 @@ export default defineComponent({
       list,
       // computed
       histories,
+      isEmpty,
+      isSelected,
       // methods
       fixingFocus,
       paste,
@@ -307,6 +314,13 @@ export default defineComponent({
     &:not(:last-child) {
       border-bottom: 1px solid;
     }
+  }
+  .empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-family: initial;
   }
 }
 .separator {
