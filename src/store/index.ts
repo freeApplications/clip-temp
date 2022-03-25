@@ -1,12 +1,12 @@
 import { createStore } from 'vuex';
 
 export type State = {
-  keyEvent: KeyboardEvent | null;
+  keyEvent: KeyboardEvent;
 };
 
 export default createStore<State>({
   state: {
-    keyEvent: null,
+    keyEvent: new KeyboardEvent(''),
   },
   mutations: {
     setKeyEvent: (state, keyEvent: KeyboardEvent) =>

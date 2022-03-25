@@ -14,6 +14,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 import path from 'path';
 import './clipboard-store';
+import robot from 'robotjs';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -135,6 +136,13 @@ ipcMain.on('show:edit-menu', (event) => {
     })
   );
   menu.popup();
+});
+ipcMain.on('press:key', (event, key: string, shiftKey: boolean) => {
+  try {
+    shiftKey ? robot.keyTap(key, 'shift') : robot.keyTap(key);
+  } catch (e) {
+    console.log(e);
+  }
 });
 ipcMain.on('close:window', (event, action?: () => void) => {
   if (action) {

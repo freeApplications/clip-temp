@@ -24,6 +24,9 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.on('paste:edit-menu', pasteAction);
     ipcRenderer.on('remove:edit-menu', removeAction);
   },
+  pressKey: (key: string, shiftKey: boolean) => {
+    ipcRenderer.send('press:key', key, shiftKey);
+  },
   closeWindow: () => {
     ipcRenderer.send('close:window');
   },

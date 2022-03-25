@@ -11,7 +11,6 @@
       type="text"
       spellcheck="false"
       v-model="filterWord"
-      @blur="fixingFocus"
     )
     icon-clear(
       :class="{ invisible: !filterWord.length }"
@@ -139,9 +138,16 @@ export default defineComponent({
 
     // methods
     const { api } = window;
-    const fixingFocus = () => {
+    const fixingFocus = (doPressKey = true) => {
       const refsInput = input.value;
-      if (!refsInput) return;
+      if (!refsInput || refsInput === document.activeElement) return;
+      if (doPressKey) {
+        const keyEvent = store.state.keyEvent;
+        if (keyEvent.key.length > 1) return;
+        keyEvent.preventDefault();
+        const listener = () => api.pressKey(keyEvent.key, keyEvent.shiftKey);
+        refsInput.addEventListener('focus', listener, { once: true });
+      }
       refsInput.focus();
     };
     const paste = () => context.emit('paste');
@@ -174,7 +180,6 @@ export default defineComponent({
     watch(
       () => store.state.keyEvent,
       (keyEvent) => {
-        if (keyEvent === null) return fixingFocus();
         if (keyEvent.key === HANDLING_KEYS.ESCAPE) {
           if (state.filterWord.length) {
             state.filterWord = '';
@@ -201,7 +206,7 @@ export default defineComponent({
               : (state.selectIndex = 0);
             break;
           default:
-            return;
+            return fixingFocus();
         }
         const refsList = list.value;
         if (!refsList) return;
@@ -225,7 +230,7 @@ export default defineComponent({
 
     // lifecycle
     onMounted(() => {
-      nextTick(() => fixingFocus());
+      nextTick(() => fixingFocus(false));
     });
 
     return {
@@ -243,7 +248,6 @@ export default defineComponent({
       isEmpty,
       isSelected,
       // methods
-      fixingFocus,
       paste,
       remove,
       resize,

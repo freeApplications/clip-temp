@@ -17,11 +17,11 @@ import store from '~/store';
 export default defineComponent({
   setup() {
     const onKeyDown = (keyEvent: KeyboardEvent) => {
-      const handlingKeys = Object.values(HANDLING_KEYS);
-      if (handlingKeys.includes(keyEvent.key)) {
+      if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey) return;
+      if (Object.values(HANDLING_KEYS).includes(keyEvent.key)) {
         keyEvent.preventDefault();
-        store.commit('setKeyEvent', keyEvent);
       }
+      store.commit('setKeyEvent', keyEvent);
     };
     onMounted(() => {
       useRouter().push('/');
