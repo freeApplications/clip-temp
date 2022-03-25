@@ -23,9 +23,7 @@ const upsertHistory = () => {
     Object.assign(recent, current);
     return;
   }
-  const same = histories.find(
-    (item) => item.text === current.text && item.html === current.html
-  );
+  const same = histories.find((item) => item.text === current.text);
   if (same) {
     // When exist same item, update timestamp
     same.time = current.time;
