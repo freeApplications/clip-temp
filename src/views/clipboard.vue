@@ -35,8 +35,8 @@ export default defineComponent({
     const { histories, selectIndex } = toRefs(state);
 
     // methods
-    const paste = () => {
-      api.pasteClipboard(state.selectIndex);
+    const paste = (asPlainText?: boolean) => {
+      api.pasteClipboard(state.selectIndex, asPlainText);
     };
     const remove = () => {
       api.removeClipboard(state.selectIndex);

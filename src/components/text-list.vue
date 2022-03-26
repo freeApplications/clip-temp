@@ -56,8 +56,9 @@
       @click="paste"
     ) Paste
     button(
-      @click="closeWindow"
-    ) Cancel
+      :disabled="!isSelected"
+      @click="pasteAsPlainText"
+    ) Paste as Plain Text
 </template>
 
 <script lang="ts">
@@ -151,6 +152,7 @@ export default defineComponent({
       refsInput.focus();
     };
     const paste = () => context.emit('paste');
+    const pasteAsPlainText = () => context.emit('paste', true);
     const remove = () => context.emit('remove');
     const resize = (event: MouseEvent) => {
       if (event.buttons === 0 || !state.isResizing) {
@@ -164,7 +166,6 @@ export default defineComponent({
       state.selectIndex = index;
       api.showEditMenu(paste, remove);
     };
-    const closeWindow = api.closeWindow;
 
     // watch
     watch(listOfText, (newValue) => {
@@ -184,7 +185,7 @@ export default defineComponent({
           if (state.filterWord.length) {
             state.filterWord = '';
           } else {
-            closeWindow();
+            api.closeWindow();
           }
           return;
         }
@@ -249,10 +250,10 @@ export default defineComponent({
       isSelected,
       // methods
       paste,
+      pasteAsPlainText,
       remove,
       resize,
       showEditMenu,
-      closeWindow,
     };
   },
 });

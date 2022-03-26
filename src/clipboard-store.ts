@@ -14,6 +14,7 @@ const upsertHistory = () => {
   if (
     recent !== null &&
     current.time - recent.time <= 500 &&
+    current.text !== recent.text &&
     (recent.text.startsWith(current.text) ||
       recent.text.endsWith(current.text) ||
       current.text.startsWith(recent.text) ||
@@ -46,12 +47,9 @@ app.on('quit', () => {
 ipcMain.on('order:clipboard', (event) => {
   event.sender.send('deliver:clipboard', histories);
 });
-ipcMain.on('paste:clipboard', (event, index: number) => {
-  const item = histories[index];
-  clipboard.write({
-    text: item.text,
-    html: item.html,
-  });
+ipcMain.on('paste:clipboard', (event, index: number, asPlainText: boolean) => {
+  const { text, html } = histories[index];
+  clipboard.write(asPlainText ? { text } : { text, html });
   ipcMain.emit('close:window', event, () => {
     if (process.platform === 'win32') {
       robot.keyTap('v', 'control');
