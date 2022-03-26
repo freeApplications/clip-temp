@@ -130,6 +130,12 @@ ipcMain.on('show:edit-menu', (event) => {
   );
   menu.append(
     new MenuItem({
+      label: 'Paste as Plain Text',
+      click: () => event.sender.send('paste:context-menu', true),
+    })
+  );
+  menu.append(
+    new MenuItem({
       label: 'Delete',
       accelerator: 'Delete',
       click: () => event.sender.send('remove:edit-menu'),

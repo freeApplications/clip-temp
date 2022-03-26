@@ -17,11 +17,16 @@ contextBridge.exposeInMainWorld('api', {
   removeClipboard: (index: number) => {
     ipcRenderer.send('remove:clipboard', index);
   },
-  showEditMenu: (pasteAction: () => void, removeAction: () => void) => {
+  showEditMenu: (
+    pasteAction: (asPlainText?: boolean) => void,
+    removeAction: () => void
+  ) => {
     ipcRenderer.removeAllListeners('paste:edit-menu');
     ipcRenderer.removeAllListeners('remove:edit-menu');
     ipcRenderer.send('show:edit-menu');
-    ipcRenderer.on('paste:edit-menu', pasteAction);
+    ipcRenderer.on('paste:edit-menu', (event, asPlainText?: boolean) =>
+      pasteAction(asPlainText)
+    );
     ipcRenderer.on('remove:edit-menu', removeAction);
   },
   pressKey: (key: string, shiftKey: boolean) => {
