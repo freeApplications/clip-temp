@@ -5,17 +5,45 @@
       router-link(to="/") clipboard
     li.tab-item
       router-link(to="/template") template
-router-view.tab-contents
+router-view.tab-contents(
+  v-if="!isReloading"
+)
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onBeforeUnmount } from 'vue';
+import {
+  defineComponent,
+  reactive,
+  toRefs,
+  watch,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+} from 'vue';
 import { useRouter } from 'vue-router';
 import { HANDLING_KEYS } from '~/renderer-constants';
 import store from '~/store';
 
 export default defineComponent({
   setup() {
+    // data
+    const state = reactive({
+      isReloading: false,
+    });
+    const { isReloading } = toRefs(state);
+
+    // watch
+    watch(
+      () => store.state.windowEvent,
+      (windowEvent) => {
+        if (windowEvent && windowEvent.type === 'reload') {
+          state.isReloading = true;
+          nextTick(() => (state.isReloading = false));
+        }
+      }
+    );
+
+    // methods
     const onKeyDown = (keyEvent: KeyboardEvent) => {
       if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey) return;
       if (Object.values(HANDLING_KEYS).includes(keyEvent.key)) {
@@ -23,6 +51,8 @@ export default defineComponent({
       }
       store.commit('setKeyEvent', keyEvent);
     };
+
+    // lifecycle
     onMounted(() => {
       useRouter().push('/');
       document.addEventListener('keydown', onKeyDown);
@@ -30,6 +60,11 @@ export default defineComponent({
     onBeforeUnmount(() => {
       document.removeEventListener('keydown', onKeyDown);
     });
+
+    return {
+      // data
+      isReloading,
+    };
   },
 });
 </script>

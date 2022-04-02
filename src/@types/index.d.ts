@@ -4,7 +4,7 @@ export type Clipboard = {
   html: string;
 };
 
-export type WindowEventType = 'paste' | 'remove';
+export type WindowEventType = 'reload' | 'paste' | 'remove';
 export type WindowEvent = {
   type: WindowEventType;
   args: unknown[];

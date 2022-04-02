@@ -28,7 +28,7 @@ const createMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
       {
         label: 'Reload',
         accelerator: 'F5',
-        role: 'reload',
+        click: () => sender.send('store:window-event', 'reload'),
       },
       {
         label: 'Toggle Developer Tools',
