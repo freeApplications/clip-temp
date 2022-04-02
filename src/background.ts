@@ -8,12 +8,12 @@ import {
   ipcMain,
   Tray,
   Menu,
-  MenuItem,
 } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 import path from 'path';
 import './clipboard-store';
+import { createAppMenu, createEditMenu } from './menu-factory';
 import robot from 'robotjs';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -47,6 +47,7 @@ async function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+  Menu.setApplicationMenu(createAppMenu(win.webContents));
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
@@ -120,28 +121,7 @@ ipcMain.on('show:window', async () => {
   win?.show();
 });
 ipcMain.on('show:edit-menu', (event) => {
-  const menu = new Menu();
-  menu.append(
-    new MenuItem({
-      label: 'Paste',
-      accelerator: 'Enter',
-      click: () => event.sender.send('store:window-event', 'paste'),
-    })
-  );
-  menu.append(
-    new MenuItem({
-      label: 'Paste as Plain Text',
-      click: () => event.sender.send('store:window-event', 'paste', true),
-    })
-  );
-  menu.append(
-    new MenuItem({
-      label: 'Delete',
-      accelerator: 'Delete',
-      click: () => event.sender.send('store:window-event', 'remove'),
-    })
-  );
-  menu.popup();
+  createEditMenu(event.sender).popup();
 });
 ipcMain.on('press:key', (event, key: string, shiftKey: boolean) => {
   try {
