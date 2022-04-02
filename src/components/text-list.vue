@@ -26,7 +26,7 @@
       :class="{ selected: selectIndex === index }"
       @click="selectIndex = index"
       @dblclick="paste"
-      @click.right="showEditMenu(index)"
+      @click.right="showEditMenu"
     )
       span.parts(
         v-for="partOfText in item.text.parts"
@@ -138,7 +138,7 @@ export default defineComponent({
     });
 
     // methods
-    const { api } = window;
+    const { pressKey, showEditMenu } = window.api;
     const fixingFocus = (doPressKey = true) => {
       const refsInput = input.value;
       if (!refsInput || refsInput === document.activeElement) return;
@@ -146,7 +146,7 @@ export default defineComponent({
         const keyEvent = store.state.keyEvent;
         if (keyEvent.key.length > 1) return;
         keyEvent.preventDefault();
-        const listener = () => api.pressKey(keyEvent.key, keyEvent.shiftKey);
+        const listener = () => pressKey(keyEvent.key, keyEvent.shiftKey);
         refsInput.addEventListener('focus', listener, { once: true });
       }
       refsInput.focus();
@@ -161,12 +161,9 @@ export default defineComponent({
       event.preventDefault();
       state.adjustHeight += event.movementY;
     };
-    const showEditMenu = (index: number) => {
-      state.selectIndex = index;
-      api.showEditMenu(paste, remove);
-    };
 
     // watch
+    const { closeWindow } = window.api;
     watch(listOfText, (newValue) => {
       if (newValue.length > state.selectIndex) return;
       const adjust = newValue.length ? 1 : 0;
@@ -184,7 +181,7 @@ export default defineComponent({
           if (state.filterWord.length) {
             state.filterWord = '';
           } else {
-            api.closeWindow();
+            closeWindow();
           }
           return;
         }

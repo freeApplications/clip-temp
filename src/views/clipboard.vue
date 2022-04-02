@@ -8,9 +8,10 @@ text-list(
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs, computed, watch } from 'vue';
 import TextList from '~/components/text-list.vue';
 import Clipboard from '~/models/clipboard';
+import store from '~/store';
 
 type State = {
   histories: Clipboard[];
@@ -34,6 +35,12 @@ export default defineComponent({
     });
     const { histories, selectIndex } = toRefs(state);
 
+    // computed
+    const isEmpty = computed(() => !state.histories.length);
+    const isSelected = computed(
+      () => !isEmpty.value && state.histories.length > state.selectIndex
+    );
+
     // methods
     const paste = (asPlainText?: boolean) => {
       api.pasteClipboard(state.selectIndex, asPlainText);
@@ -42,6 +49,24 @@ export default defineComponent({
       api.removeClipboard(state.selectIndex);
       state.histories.splice(state.selectIndex, 1);
     };
+
+    // watch
+    watch(
+      () => store.state.windowEvent,
+      (windowEvent) => {
+        if (!windowEvent || !isSelected.value) return;
+        switch (windowEvent.type) {
+          case 'paste': {
+            const [asPlainText] = windowEvent.args;
+            paste(asPlainText as boolean | undefined);
+            break;
+          }
+          case 'remove':
+            remove();
+            break;
+        }
+      }
+    );
 
     return {
       // data

@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { Clipboard } from '~/@types';
+import { Clipboard, WindowEventType } from '~/@types';
 
 // Expose ipcRenderer to the client
 contextBridge.exposeInMainWorld('api', {
@@ -17,22 +17,20 @@ contextBridge.exposeInMainWorld('api', {
   removeClipboard: (index: number) => {
     ipcRenderer.send('remove:clipboard', index);
   },
-  showEditMenu: (
-    pasteAction: (asPlainText?: boolean) => void,
-    removeAction: () => void
-  ) => {
-    ipcRenderer.removeAllListeners('paste:edit-menu');
-    ipcRenderer.removeAllListeners('remove:edit-menu');
+  showEditMenu: () => {
     ipcRenderer.send('show:edit-menu');
-    ipcRenderer.on('paste:edit-menu', (event, asPlainText?: boolean) =>
-      pasteAction(asPlainText)
-    );
-    ipcRenderer.on('remove:edit-menu', removeAction);
   },
   pressKey: (key: string, shiftKey: boolean) => {
     ipcRenderer.send('press:key', key, shiftKey);
   },
   closeWindow: () => {
     ipcRenderer.send('close:window');
+  },
+  storeWindowEvent: (
+    action: (type: WindowEventType, ...args: unknown[]) => void
+  ) => {
+    ipcRenderer.on('store:window-event', (event, type, ...args) =>
+      action(type, ...args)
+    );
   },
 });

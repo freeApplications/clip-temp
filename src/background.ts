@@ -125,20 +125,20 @@ ipcMain.on('show:edit-menu', (event) => {
     new MenuItem({
       label: 'Paste',
       accelerator: 'Enter',
-      click: () => event.sender.send('paste:edit-menu'),
+      click: () => event.sender.send('store:window-event', 'paste'),
     })
   );
   menu.append(
     new MenuItem({
       label: 'Paste as Plain Text',
-      click: () => event.sender.send('paste:context-menu', true),
+      click: () => event.sender.send('store:window-event', 'paste', true),
     })
   );
   menu.append(
     new MenuItem({
       label: 'Delete',
       accelerator: 'Delete',
-      click: () => event.sender.send('remove:edit-menu'),
+      click: () => event.sender.send('store:window-event', 'remove'),
     })
   );
   menu.popup();
