@@ -42,9 +42,7 @@ export default defineComponent({
     );
 
     // methods
-    const paste = (asPlainText?: boolean) => {
-      api.pasteClipboard(state.selectIndex, asPlainText);
-    };
+    const paste = () => api.pasteClipboard(state.selectIndex);
     const remove = () => {
       api.removeClipboard(state.selectIndex);
       state.histories.splice(state.selectIndex, 1);
@@ -56,11 +54,9 @@ export default defineComponent({
       (windowEvent) => {
         if (!windowEvent || !isSelected.value) return;
         switch (windowEvent.type) {
-          case 'paste': {
-            const [asPlainText] = windowEvent.args;
-            paste(asPlainText as boolean | undefined);
+          case 'paste':
+            paste();
             break;
-          }
           case 'remove':
             remove();
             break;

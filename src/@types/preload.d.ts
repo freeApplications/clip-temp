@@ -5,7 +5,7 @@ declare global {
     api: {
       orderClipboard: () => void;
       deliverClipboard: (action: (histories: Clipboard[]) => void) => void;
-      pasteClipboard: (index: number, asPlainText = false) => void;
+      pasteClipboard: (index: number) => void;
       removeClipboard: (index: number) => void;
       showEditMenu: () => void;
       pressKey: (key: string, shiftKey: boolean) => void;

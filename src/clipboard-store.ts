@@ -9,7 +9,6 @@ const upsertHistory = () => {
   const current = {
     time: Date.now(),
     text: clipboard.readText(),
-    html: clipboard.readHTML(),
   };
   if (
     recent !== null &&
@@ -47,9 +46,9 @@ app.on('quit', () => {
 ipcMain.on('order:clipboard', (event) => {
   event.sender.send('deliver:clipboard', histories);
 });
-ipcMain.on('paste:clipboard', (event, index: number, asPlainText: boolean) => {
-  const { text, html } = histories[index];
-  clipboard.write(asPlainText ? { text } : { text, html });
+ipcMain.on('paste:clipboard', (event, index: number) => {
+  const { text } = histories[index];
+  clipboard.writeText(text);
   ipcMain.emit('close:window', event, () => {
     if (process.platform === 'win32') {
       robot.keyTap('v', 'control');

@@ -11,8 +11,8 @@ contextBridge.exposeInMainWorld('api', {
       action(histories)
     );
   },
-  pasteClipboard: (index: number, asPlainText = false) => {
-    ipcRenderer.send('paste:clipboard', index, asPlainText);
+  pasteClipboard: (index: number) => {
+    ipcRenderer.send('paste:clipboard', index);
   },
   removeClipboard: (index: number) => {
     ipcRenderer.send('remove:clipboard', index);

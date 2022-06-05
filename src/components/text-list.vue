@@ -53,12 +53,8 @@
   .footer
     button(
       :disabled="!isSelected"
-      @click="paste()"
+      @click="paste"
     ) Paste
-    button(
-      :disabled="!isSelected"
-      @click="paste(true)"
-    ) Paste as Plain Text
 </template>
 
 <script lang="ts">
@@ -151,7 +147,7 @@ export default defineComponent({
       }
       refsInput.focus();
     };
-    const paste = (asPlainText = false) => context.emit('paste', asPlainText);
+    const paste = () => context.emit('paste');
     const remove = () => context.emit('remove');
     const resize = (event: MouseEvent) => {
       if (event.buttons === 0 || !state.isResizing) {
