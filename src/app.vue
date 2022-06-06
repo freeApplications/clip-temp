@@ -4,7 +4,9 @@
     li.tab-item
       router-link(to="/") clipboard
     li.tab-item
-      router-link(to="/template") template
+      router-link(
+        :to="`/template${isTemplateEdit ? '/edit' : ''}`"
+      ) template
 router-view.tab-contents(
   v-if="!isReloading"
 )
@@ -15,22 +17,28 @@ import {
   defineComponent,
   reactive,
   toRefs,
+  computed,
   watch,
   nextTick,
   onMounted,
   onBeforeUnmount,
 } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { HANDLING_KEYS } from '~/renderer-constants';
 import store from '~/store';
 
 export default defineComponent({
   setup() {
+    const route = useRoute();
+
     // data
     const state = reactive({
       isReloading: false,
     });
     const { isReloading } = toRefs(state);
+
+    // computed
+    const isTemplateEdit = computed(() => route.name === 'template-edit');
 
     // watch
     watch(
@@ -46,7 +54,10 @@ export default defineComponent({
     // methods
     const onKeyDown = (keyEvent: KeyboardEvent) => {
       if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey) return;
-      if (Object.values(HANDLING_KEYS).includes(keyEvent.key)) {
+      if (
+        !isTemplateEdit.value &&
+        Object.values(HANDLING_KEYS).includes(keyEvent.key)
+      ) {
         keyEvent.preventDefault();
       }
       store.commit('setKeyEvent', keyEvent);
@@ -64,6 +75,8 @@ export default defineComponent({
     return {
       // data
       isReloading,
+      // computed
+      isTemplateEdit,
     };
   },
 });
@@ -75,6 +88,20 @@ export default defineComponent({
 * {
   box-sizing: border-box;
   outline: none;
+  &::-webkit-scrollbar {
+    width: 1rem;
+    height: 1rem;
+  }
+  &::-webkit-scrollbar-track {
+    margin: -1px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+  }
+  &::-webkit-scrollbar-corner {
+    margin: -2px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+  }
 }
 body {
   height: 100vh;
@@ -114,7 +141,7 @@ body {
         padding: 3px;
         font-weight: bold;
         text-decoration: none;
-        &.router-link-exact-active,
+        &.router-link-active,
         &:hover {
           padding: 2px;
           margin-bottom: 2px;
@@ -129,8 +156,44 @@ body {
   height: calc(100% - 1.5rem);
   padding: 0.5rem;
 }
+input[type='text'],
+textarea {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid;
+  font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
+}
+button {
+  padding: 0.125rem 1rem;
+  border: 1px solid;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.75rem;
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  &:not(:last-child) {
+    margin-right: 0.333rem;
+  }
+}
 
 @media (prefers-color-scheme: light) {
+  * {
+    &::-webkit-scrollbar-track {
+      border-top-color: $light-border;
+      border-left-color: $light-border;
+      background-color: $light-scrollbar-track;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $light-scrollbar;
+    }
+    &::-webkit-scrollbar-corner {
+      border-top-color: $light-border;
+      border-left-color: $light-border;
+      background-color: $light-scrollbar-track;
+    }
+  }
   #app {
     background-color: $light-background;
     color: $light-font;
@@ -140,7 +203,7 @@ body {
     background-color: $light-background-main;
     .tab-list .tab-item a {
       color: $light-inactive-link;
-      &.router-link-exact-active,
+      &.router-link-active,
       &:hover {
         border-color: $light-border;
         border-bottom-color: $light-background;
@@ -149,8 +212,37 @@ body {
       }
     }
   }
+  input[type='text'],
+  textarea {
+    border-color: $light-border;
+    background-color: $light-background-main;
+    color: $light-font;
+  }
+  button {
+    border-color: $light-border;
+    background-color: $light-button;
+    color: $light-font;
+    &:not(:disabled):hover {
+      background-color: $light-button-hover;
+    }
+  }
 }
 @media (prefers-color-scheme: dark) {
+  * {
+    &::-webkit-scrollbar-track {
+      border-top-color: $dark-border;
+      border-left-color: $dark-border;
+      background-color: $dark-scrollbar-track;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $dark-scrollbar;
+    }
+    &::-webkit-scrollbar-corner {
+      border-top-color: $dark-border;
+      border-left-color: $dark-border;
+      background-color: $dark-scrollbar-track;
+    }
+  }
   #app {
     background-color: $dark-background;
     color: $dark-font;
@@ -160,13 +252,27 @@ body {
     background-color: $dark-background-main;
     .tab-list .tab-item a {
       color: $dark-inactive-link;
-      &.router-link-exact-active,
+      &.router-link-active,
       &:hover {
         border-color: $dark-border;
         border-bottom-color: $dark-background;
         background-color: $dark-background;
         color: $dark-font;
       }
+    }
+  }
+  input[type='text'],
+  textarea {
+    border-color: $dark-border;
+    background-color: $dark-background-main;
+    color: $dark-font;
+  }
+  button {
+    border-color: $dark-border;
+    background-color: $dark-button;
+    color: $dark-font;
+    &:not(:disabled):hover {
+      background-color: $dark-button-hover;
     }
   }
 }

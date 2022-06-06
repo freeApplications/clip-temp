@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import clipboard from '../views/clipboard.vue';
+import template from '../views/template/index.vue';
+import templateEdit from '../views/template/edit.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,11 +12,12 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/template',
     name: 'template',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "template" */ '../views/template.vue'),
+    component: template,
+  },
+  {
+    path: '/template/edit',
+    name: 'template-edit',
+    component: templateEdit,
   },
 ];
 

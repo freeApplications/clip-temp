@@ -54,10 +54,13 @@
         :class="{ highlight: partOfText.isMatched }"
       ) {{ partOfText }}
   .footer
-    button(
-      :disabled="!isSelected"
-      @click="paste"
-    ) Paste
+    .left
+      slot(name="footer")
+    .right
+      button(
+        :disabled="!isSelected"
+        @click="paste"
+      ) Paste
 </template>
 
 <script lang="ts">
@@ -301,20 +304,6 @@ export default defineComponent({
       }
     }
   }
-  &::-webkit-scrollbar {
-    width: 1rem;
-    height: 1rem;
-  }
-  &::-webkit-scrollbar-track {
-    margin: -1px;
-    border-top: 1px solid;
-    border-left: 1px solid;
-  }
-  &::-webkit-scrollbar-corner {
-    margin: -2px;
-    border-top: 1px solid;
-    border-left: 1px solid;
-  }
 }
 .list {
   min-height: 1.5rem;
@@ -387,22 +376,14 @@ export default defineComponent({
 }
 .footer {
   display: flex;
-  justify-content: flex-end;
-  transform: scale(1.25, 1);
-  transform-origin: top right;
-  button {
-    padding: 0.125rem 0.8rem;
-    border: 1px solid;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    &:disabled {
-      opacity: 0.5;
-      cursor: default;
-    }
-    &:not(:last-child) {
-      margin-right: 0.4rem;
-    }
+  justify-content: space-between;
+  .left {
+    transform: scale(1.5, 1);
+    transform-origin: top left;
+  }
+  .right {
+    transform: scale(1.5, 1);
+    transform-origin: top right;
   }
 }
 .cursor-resize {
@@ -421,19 +402,6 @@ export default defineComponent({
     border-color: $light-border;
     .parts.highlight::after {
       background-color: $light-highlight;
-    }
-    &::-webkit-scrollbar-track {
-      border-top-color: $light-border;
-      border-left-color: $light-border;
-      background-color: $light-scrollbar-track;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: $light-scrollbar;
-    }
-    &::-webkit-scrollbar-corner {
-      border-top-color: $light-border;
-      border-left-color: $light-border;
-      background-color: $light-scrollbar-track;
     }
   }
   .list {
@@ -457,14 +425,6 @@ export default defineComponent({
       background-color: $light-background-main;
     }
   }
-  .footer button {
-    border-color: $light-border;
-    background-color: $light-button;
-    color: $light-font;
-    &:not(:disabled):hover {
-      background-color: $light-button-hover;
-    }
-  }
 }
 @media (prefers-color-scheme: dark) {
   .header .filter-word {
@@ -475,19 +435,6 @@ export default defineComponent({
     border-color: $dark-border;
     .parts.highlight::after {
       background-color: $dark-highlight;
-    }
-    &::-webkit-scrollbar-track {
-      border-top-color: $dark-border;
-      border-left-color: $dark-border;
-      background-color: $dark-scrollbar-track;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: $dark-scrollbar;
-    }
-    &::-webkit-scrollbar-corner {
-      border-top-color: $dark-border;
-      border-left-color: $dark-border;
-      background-color: $dark-scrollbar-track;
     }
   }
   .list {
@@ -509,14 +456,6 @@ export default defineComponent({
     background-color: $dark-background-main;
     &:hover .actions svg {
       background-color: $dark-background-main;
-    }
-  }
-  .footer button {
-    border-color: $dark-border;
-    background-color: $dark-button;
-    color: $dark-font;
-    &:not(:disabled):hover {
-      background-color: $dark-button-hover;
     }
   }
 }
