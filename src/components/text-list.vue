@@ -28,10 +28,13 @@
       @dblclick="paste"
       @click.right="showEditMenu"
     )
-      span.parts(
+      template(
         v-for="partOfText in item.text.parts"
-        :class="{ highlight: partOfText.isMatched }"
-      ) {{ partOfText }}
+      )
+        span.parts(
+          v-for='(textPerLine, index) in partOfText.split(/\\r?\\n/)'
+          :class="{ highlight: partOfText.isMatched, 'new-line': index > 0 }"
+        ) {{ textPerLine }}
     .empty(v-if="isEmpty")
       template(v-if="filterWord.length") No matches found
       template(v-else) {{ isClipboard ? 'Clipboard history' : 'Template' }} is empty
@@ -279,7 +282,6 @@ export default defineComponent({
 }
 .list,
 .text {
-  overflow-y: auto;
   border: 1px solid;
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
   .parts {
@@ -316,17 +318,30 @@ export default defineComponent({
 }
 .list {
   min-height: 1.5rem;
+  overflow-y: auto;
   .item {
-    height: 1.46rem;
+    height: 1.45rem;
     padding: 0.25rem 0.5rem;
-    overflow-x: hidden;
-    overflow-y: visible;
+    overflow: hidden;
     font-size: 0.75rem;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    white-space: pre;
     text-align: left;
     &:not(:last-child) {
       border-bottom: 1px solid;
+    }
+    .parts {
+      &.new-line {
+        position: relative;
+        padding-left: 1.25rem;
+        &::before {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%);
+          font-size: 1.25rem;
+          content: '⮠';
+        }
+      }
     }
   }
   .empty {
@@ -345,7 +360,7 @@ export default defineComponent({
   min-height: 1.75rem;
   margin-bottom: 0.5rem;
   padding: 0.25rem 0.5rem;
-  overflow-x: auto;
+  overflow: auto;
   font-size: 0.75rem;
   line-height: 1.5;
   text-align: left;
