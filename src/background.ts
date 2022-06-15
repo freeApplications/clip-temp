@@ -13,6 +13,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 import path from 'path';
 import './clipboard-store';
+import './template-store';
 import { createAppMenu, createEditMenu } from './menu-factory';
 import robot from 'robotjs';
 

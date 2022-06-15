@@ -4,28 +4,51 @@
     .text-wide title:
     input(
       type="text"
+      v-model="title"
     )
     .text-wide template:
-    textarea
+    textarea(
+      v-model="text"
+    )
   .footer
-    button(@click="goIndex") Save
+    button(@click="save") Save
     button(@click="goIndex") Cancel
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, reactive, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 
+type State = {
+  title: string;
+  text: string;
+};
 export default defineComponent({
   setup() {
+    const { api } = window;
     const router = useRouter();
+
+    // data
+    const state = reactive<State>({
+      title: '',
+      text: '',
+    });
+    const { title, text } = toRefs(state);
 
     // methods
     const goIndex = () => router.push('/template');
+    const save = () => {
+      api.saveTemplate(index, state.title, state.text);
+      goIndex();
+    };
 
     return {
+      // data
+      title,
+      text,
       // methods
       goIndex,
+      save,
     };
   },
 });
