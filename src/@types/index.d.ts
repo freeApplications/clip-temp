@@ -1,3 +1,5 @@
+export type ClipTemp = Clipboard | Template;
+
 export type Clipboard = {
   time: number;
   text: string;

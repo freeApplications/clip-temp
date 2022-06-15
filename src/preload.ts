@@ -22,6 +22,12 @@ contextBridge.exposeInMainWorld('api', {
   saveTemplate: (title: string, text: string) => {
     ipcRenderer.send('save:template', title, text);
   },
+  orderTemplate: () => {
+    ipcRenderer.send('order:template');
+  },
+  deliverTemplate: (action: (templates: Template[]) => void) => {
+    ipcRenderer.on('deliver:template', (event, templates) => action(templates));
+  },
   // window
   showEditMenu: () => {
     ipcRenderer.send('show:edit-menu');

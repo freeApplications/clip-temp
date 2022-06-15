@@ -10,6 +10,8 @@ declare global {
       removeClipboard: (index: number) => void;
       // template
       saveTemplate: (title: string, text: string) => void;
+      orderTemplate: () => void;
+      deliverTemplate: (action: (templates: Template[]) => void) => void;
       // window
       showEditMenu: () => void;
       pressKey: (key: string, shiftKey: boolean) => void;

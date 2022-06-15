@@ -29,7 +29,7 @@
       @click.right="showEditMenu"
     )
       template(
-        v-for="partOfText in item.text.parts"
+        v-for="partOfText in isClipboard ? item.text.parts : item.title.parts"
       )
         span.parts(
           v-for='(textPerLine, index) in partOfText.split(/\\r?\\n/)'
@@ -78,7 +78,7 @@ import {
 import IconFilter from '~/components/icons/filter.vue';
 import IconClear from '~/components/icons/clear.vue';
 import IconRemove from '~/components/icons/remove.vue';
-import Clipboard from '~/models/clipboard';
+import ClipTemp from '~/models/clip-temp';
 import { HANDLING_KEYS } from '~/renderer-constants';
 import store from '~/store';
 import { useRoute } from 'vue-router';
@@ -96,7 +96,7 @@ export default defineComponent({
       required: true,
     },
     list: {
-      type: Array as PropType<Clipboard[]>,
+      type: Array as PropType<ClipTemp[]>,
       required: true,
     },
   },
@@ -123,7 +123,7 @@ export default defineComponent({
     const isClipboard = computed(() => {
       return useRoute().name === 'clipboard';
     });
-    const listOfText = computed<Clipboard[]>(() => {
+    const listOfText = computed<ClipTemp[]>(() => {
       return props.list
         .filter((item) => item.match(state.filterWord))
         .sort((a, b) => a.compareTo(b));

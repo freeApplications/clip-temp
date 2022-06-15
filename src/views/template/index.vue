@@ -15,10 +15,10 @@ text-list(
 import { defineComponent, reactive, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import TextList from '~/components/text-list.vue';
-import Clipboard from '~/models/clipboard';
+import Template from '~/models/template';
 
 type State = {
-  templates: Clipboard[];
+  templates: Template[];
   selectIndex: number;
 };
 export default defineComponent({
@@ -27,6 +27,11 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const { api } = window;
+    api.orderTemplate();
+    api.deliverTemplate((templates) => {
+      state.templates = templates.map((item) => new Template(item));
+    });
 
     // data
     const state = reactive<State>({

@@ -13,3 +13,6 @@ ipcMain.on('save:template', (event, title: string, text: string) => {
   });
   store.set('templates', templates);
 });
+ipcMain.on('order:template', (event) => {
+  event.sender.send('deliver:template', templates);
+});
