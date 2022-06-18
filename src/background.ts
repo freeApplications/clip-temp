@@ -27,6 +27,8 @@ protocol.registerSchemesAsPrivileged([
 let win: BrowserWindow | null;
 async function createWindow() {
   if (win && !win.isDestroyed()) {
+    win.webContents.send('store:window-event', 'reload');
+    win.show();
     return;
   }
   // Create the browser window.
@@ -58,7 +60,18 @@ async function createWindow() {
     // Load the index.html when not in development
     await win.loadURL('app://./index.html');
   }
+  win.on('close', withoutCloseToHide);
 }
+
+const withoutCloseToHide = (event: Event) => {
+  event.preventDefault();
+  win?.minimize();
+  win?.hide();
+};
+
+app.on('before-quit', () => {
+  win?.removeListener('close', withoutCloseToHide);
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -93,13 +106,11 @@ app.on('ready', async () => {
 let tray: Tray | null = null;
 app.whenReady().then(() => {
   // Register global shortcut to show the window
-  globalShortcut.register('CommandOrControl+Shift+V', () => {
-    ipcMain.emit('show:window');
-  });
+  globalShortcut.register('CommandOrControl+Shift+V', createWindow);
   // Make tray icon wait in system's notification area
   tray = new Tray(path.join(__static, 'icon.png'));
   tray.setToolTip(app.getName());
-  tray.on('click', () => ipcMain.emit('show:window'));
+  tray.on('click', createWindow);
 });
 
 // Exit cleanly on request from parent process in development mode.
@@ -117,10 +128,6 @@ if (isDevelopment) {
   }
 }
 
-ipcMain.on('show:window', async () => {
-  await createWindow();
-  win?.show();
-});
 ipcMain.on('show:edit-menu', (event) => {
   createEditMenu(event.sender).popup();
 });
@@ -133,7 +140,7 @@ ipcMain.on('press:key', (event, key: string, shiftKey: boolean) => {
 });
 ipcMain.on('close:window', (event, action?: () => void) => {
   if (action) {
-    win?.once('closed', action);
+    win?.once('hide', action);
   }
   win?.close();
 });
