@@ -3,6 +3,7 @@ import {
   Menu,
   MenuItemConstructorOptions as MenuItemOptions,
   WebContents,
+  nativeTheme,
 } from 'electron';
 import path from 'path';
 
@@ -63,6 +64,10 @@ const createMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
     label: 'Window',
     submenu: [
       {
+        label: 'Theme',
+        submenu: createThemeMenuTemplate(),
+      },
+      {
         label: 'Minimize',
         accelerator: 'CommandOrControl+M',
         role: 'minimize',
@@ -97,6 +102,43 @@ const createEditMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
     click: () => sender.send('store:window-event', 'remove'),
   },
 ];
+
+const createThemeMenuTemplate = (): MenuItemOptions[] => {
+  const themeMenu = [
+    {
+      id: 'theme-system',
+      label: 'System',
+      type: 'checkbox' as const,
+      checked: nativeTheme.themeSource === 'system',
+      click: () => changeTheme('system'),
+    },
+    {
+      id: 'theme-light',
+      label: 'Light',
+      type: 'checkbox' as const,
+      checked: nativeTheme.themeSource === 'light',
+      click: () => changeTheme('light'),
+    },
+    {
+      id: 'theme-dark',
+      label: 'Dark',
+      type: 'checkbox' as const,
+      checked: nativeTheme.themeSource === 'dark',
+      click: () => changeTheme('dark'),
+    },
+  ];
+  const changeTheme = (theme: 'system' | 'light' | 'dark') => {
+    nativeTheme.themeSource = theme;
+    const menu = Menu.getApplicationMenu();
+    if (menu === null) return;
+    for (const item of ['system', 'light', 'dark']) {
+      const menuItem = menu.getMenuItemById(`theme-${item}`);
+      if (menuItem === null) continue;
+      menuItem.checked = theme === item;
+    }
+  };
+  return themeMenu;
+};
 
 export const createAppMenu = (sender: WebContents): Menu => {
   app.setAboutPanelOptions({
