@@ -28,6 +28,12 @@ contextBridge.exposeInMainWorld('api', {
   deliverTemplate: (action: (templates: Template[]) => void) => {
     ipcRenderer.on('deliver:template', (event, templates) => action(templates));
   },
+  pasteTemplate: (index: number) => {
+    ipcRenderer.send('paste:template', index);
+  },
+  removeTemplate: (index: number) => {
+    ipcRenderer.send('remove:template', index);
+  },
   // window
   showEditMenu: () => {
     ipcRenderer.send('show:edit-menu');

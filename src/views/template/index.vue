@@ -2,8 +2,8 @@
 text-list(
   v-model="selectIndex"
   :list="templates"
-  @paste="() => {}"
-  @remove="() => {}"
+  @paste="paste"
+  @remove="remove"
 )
   template(v-slot:footer)
     button(
@@ -42,6 +42,11 @@ export default defineComponent({
 
     // methods
     const add = () => router.push('/template/edit');
+    const paste = () => api.pasteTemplate(state.selectIndex);
+    const remove = () => {
+      api.removeTemplate(state.selectIndex);
+      state.templates.splice(state.selectIndex, 1);
+    };
 
     return {
       // data
@@ -49,9 +54,9 @@ export default defineComponent({
       selectIndex,
       // methods
       add,
+      paste,
+      remove,
     };
   },
 });
 </script>
-
-<style scoped lang="scss"></style>

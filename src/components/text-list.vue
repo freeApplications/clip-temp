@@ -225,6 +225,17 @@ export default defineComponent({
         }
       }
     );
+    watch(
+      () => store.state.windowEvent,
+      (windowEvent) => {
+        if (!windowEvent || !isSelected.value) return;
+        switch (windowEvent.type) {
+          case 'paste':
+          case 'remove':
+            context.emit(windowEvent.type);
+        }
+      }
+    );
     watch(filterWord, () => (state.selectIndex = 0));
 
     // lifecycle

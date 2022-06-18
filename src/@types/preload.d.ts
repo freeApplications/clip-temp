@@ -12,6 +12,8 @@ declare global {
       saveTemplate: (title: string, text: string) => void;
       orderTemplate: () => void;
       deliverTemplate: (action: (templates: Template[]) => void) => void;
+      pasteTemplate: (index: number) => void;
+      removeTemplate: (index: number) => void;
       // window
       showEditMenu: () => void;
       pressKey: (key: string, shiftKey: boolean) => void;
