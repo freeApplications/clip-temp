@@ -14,7 +14,7 @@ text-list(
       @click="edit"
       :disabled="!isEditable"
     ) Edit
-    button(
+    button.danger(
       @click="remove"
       :disabled="!isEditable"
     ) Delete

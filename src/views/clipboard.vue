@@ -6,7 +6,7 @@ text-list(
   @remove="remove"
 )
   template(v-slot:footer)
-    button(
+    button.danger(
       @click="remove"
       :disabled="selectIndex < 0 || selectIndex >= histories.length"
     ) Delete

@@ -12,7 +12,8 @@ $light-background-main: white;
 $light-background-empty: lightgray;
 $light-border: lightgray;
 $light-button: #e4e4e4;
-$light-button-hover: #dae4ee;
+$light-button-hover: lightgreen;
+$light-danger-button-hover: #ff7369;
 $light-scrollbar: lightsteelblue;
 $light-scrollbar-track: aliceblue;
 
@@ -28,6 +29,7 @@ $dark-background-main: #292a2d;
 $dark-background-empty: #303030;
 $dark-border: #4c4c4c;
 $dark-button: #5d5d5d;
-$dark-button-hover: #535d67;
+$dark-button-hover: #55932f;
+$dark-danger-button-hover: firebrick;
 $dark-scrollbar: #404850;
 $dark-scrollbar-track: #2d3237;

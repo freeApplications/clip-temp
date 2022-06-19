@@ -239,6 +239,9 @@ textarea {
       &:not(:disabled):hover {
         background-color: $light-button-hover;
       }
+      &.danger:not(:disabled):hover {
+        background-color: $light-danger-button-hover;
+      }
     }
   }
 }
@@ -289,6 +292,9 @@ textarea {
       color: $dark-font;
       &:not(:disabled):hover {
         background-color: $dark-button-hover;
+      }
+      &.danger:not(:disabled):hover {
+        background-color: $dark-danger-button-hover;
       }
     }
   }

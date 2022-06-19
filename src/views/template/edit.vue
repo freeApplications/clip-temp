@@ -13,12 +13,12 @@
   .footer
     .left
       button(@click="save") Save
-      button(
+      button.danger(
         v-if="isEdit"
         @click="remove"
       ) Delete
     .right
-      button(@click="goIndex") Cancel
+      button.danger(@click="goIndex") Cancel
 </template>
 
 <script lang="ts">
