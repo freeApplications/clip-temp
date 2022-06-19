@@ -3,7 +3,7 @@ text-list(
   v-model="selectIndex"
   :list="templates"
   @paste="paste"
-  @edit="selectIndex >= 0 && selectIndex < templates.length ? edit() : undefined"
+  @edit="isEditable ? edit() : undefined"
   @remove="remove"
 )
   template(v-slot:footer)
@@ -12,12 +12,16 @@ text-list(
     ) Add
     button(
       @click="edit"
-      :disabled="selectIndex < 0 || selectIndex >= templates.length"
+      :disabled="!isEditable"
     ) Edit
+    button(
+      @click="remove"
+      :disabled="!isEditable"
+    ) Delete
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import TextList from '~/components/text-list.vue';
 import Template from '~/models/template';
@@ -45,6 +49,11 @@ export default defineComponent({
     });
     const { templates, selectIndex } = toRefs(state);
 
+    // computed
+    const isEditable = computed(
+      () => state.selectIndex >= 0 && state.selectIndex < state.templates.length
+    );
+
     // methods
     const add = () => router.push('/template/edit');
     const paste = () => api.pasteTemplate(state.selectIndex);
@@ -58,6 +67,8 @@ export default defineComponent({
       // data
       templates,
       selectIndex,
+      // computed
+      isEditable,
       // methods
       add,
       paste,

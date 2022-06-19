@@ -163,19 +163,31 @@ textarea {
   border: 1px solid;
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
 }
-button {
-  padding: 0.125rem 1rem;
-  border: 1px solid;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 0.75rem;
-  cursor: pointer;
-  &:disabled {
-    opacity: 0.5;
-    cursor: default;
+.footer {
+  display: flex;
+  justify-content: space-between;
+  .left {
+    transform: scale(1.5, 1);
+    transform-origin: top left;
   }
-  &:not(:last-child) {
-    margin-right: 0.333rem;
+  .right {
+    transform: scale(1.5, 1);
+    transform-origin: top right;
+  }
+  button {
+    padding: 0.125rem 1rem;
+    border: 1px solid;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.75rem;
+    cursor: pointer;
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    &:not(:last-child) {
+      margin-right: 0.333rem;
+    }
   }
 }
 
@@ -219,12 +231,14 @@ button {
     background-color: $light-background-main;
     color: $light-font;
   }
-  button {
-    border-color: $light-border;
-    background-color: $light-button;
-    color: $light-font;
-    &:not(:disabled):hover {
-      background-color: $light-button-hover;
+  .footer {
+    button {
+      border-color: $light-border;
+      background-color: $light-button;
+      color: $light-font;
+      &:not(:disabled):hover {
+        background-color: $light-button-hover;
+      }
     }
   }
 }
@@ -268,12 +282,14 @@ button {
     background-color: $dark-background-main;
     color: $dark-font;
   }
-  button {
-    border-color: $dark-border;
-    background-color: $dark-button;
-    color: $dark-font;
-    &:not(:disabled):hover {
-      background-color: $dark-button-hover;
+  .footer {
+    button {
+      border-color: $dark-border;
+      background-color: $dark-button;
+      color: $dark-font;
+      &:not(:disabled):hover {
+        background-color: $dark-button-hover;
+      }
     }
   }
 }

@@ -5,6 +5,11 @@ text-list(
   @paste="paste"
   @remove="remove"
 )
+  template(v-slot:footer)
+    button(
+      @click="remove"
+      :disabled="selectIndex < 0 || selectIndex >= histories.length"
+    ) Delete
 </template>
 
 <script lang="ts">

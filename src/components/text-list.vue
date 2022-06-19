@@ -396,18 +396,6 @@ export default defineComponent({
     }
   }
 }
-.footer {
-  display: flex;
-  justify-content: space-between;
-  .left {
-    transform: scale(1.5, 1);
-    transform-origin: top left;
-  }
-  .right {
-    transform: scale(1.5, 1);
-    transform-origin: top right;
-  }
-}
 .cursor-resize {
   cursor: ns-resize !important;
 }

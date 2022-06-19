@@ -11,17 +11,23 @@
       v-model="text"
     )
   .footer
-    button(@click="save") Save
-    button(@click="goIndex") Cancel
+    .left
+      button(@click="save") Save
+      button(
+        v-if="isEdit"
+        @click="remove"
+      ) Delete
+    .right
+      button(@click="goIndex") Cancel
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { Template } from '~/@types';
 
 type State = {
-  index: string;
+  index: number | string;
   title: string;
   text: string;
 };
@@ -38,23 +44,31 @@ export default defineComponent({
 
     // data
     const state = reactive<State>({
-      index: props.index,
+      index: props.index.match(/\d+/) ? Number(props.index) : props.index,
       title: '',
       text: '',
     });
-    const index = state.index.match(/\d+/) ? Number(state.index) : state.index;
-    if (typeof index === 'number') {
+    const { title, text } = toRefs(state);
+
+    // computed
+    const isEdit = computed(() => typeof state.index === 'number');
+
+    // load template
+    if (isEdit.value) {
       api.getTemplate(Number(state.index)).then((template: Template) => {
         state.title = template.title;
         state.text = template.text;
       });
     }
-    const { title, text } = toRefs(state);
 
     // methods
     const goIndex = () => router.push('/template');
     const save = () => {
-      api.saveTemplate(index, state.title, state.text);
+      api.saveTemplate(state.index, state.title, state.text);
+      goIndex();
+    };
+    const remove = () => {
+      api.removeTemplate(state.index as number);
       goIndex();
     };
 
@@ -62,9 +76,12 @@ export default defineComponent({
       // data
       title,
       text,
+      // computed
+      isEdit,
       // methods
       goIndex,
       save,
+      remove,
     };
   },
 });
@@ -98,20 +115,6 @@ export default defineComponent({
     line-height: 1.5;
     white-space: nowrap;
     resize: none;
-  }
-}
-.footer {
-  display: flex;
-  justify-content: space-between;
-  button {
-    &:first-child {
-      transform: scale(1.5, 1);
-      transform-origin: top left;
-    }
-    &:last-child {
-      transform: scale(1.5, 1);
-      transform-origin: top right;
-    }
   }
 }
 </style>
