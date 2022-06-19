@@ -5,7 +5,7 @@
       router-link(to="/") clipboard
     li.tab-item
       router-link(
-        :to="`/template${isTemplateEdit ? '/edit' : ''}`"
+        :to="isTemplateEdit ? route.path : '/template'"
       ) template
 router-view.tab-contents(
   v-if="!isReloading"
@@ -75,6 +75,7 @@ export default defineComponent({
     return {
       // data
       isReloading,
+      route,
       // computed
       isTemplateEdit,
     };

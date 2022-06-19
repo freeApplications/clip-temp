@@ -3,12 +3,17 @@ text-list(
   v-model="selectIndex"
   :list="templates"
   @paste="paste"
+  @edit="selectIndex >= 0 && selectIndex < templates.length ? edit() : undefined"
   @remove="remove"
 )
   template(v-slot:footer)
     button(
       @click="add"
     ) Add
+    button(
+      @click="edit"
+      :disabled="selectIndex < 0 || selectIndex >= templates.length"
+    ) Edit
 </template>
 
 <script lang="ts">
@@ -43,6 +48,7 @@ export default defineComponent({
     // methods
     const add = () => router.push('/template/edit');
     const paste = () => api.pasteTemplate(state.selectIndex);
+    const edit = () => router.push(`/template/${state.selectIndex}`);
     const remove = () => {
       api.removeTemplate(state.selectIndex);
       state.templates.splice(state.selectIndex, 1);
@@ -55,6 +61,7 @@ export default defineComponent({
       // methods
       add,
       paste,
+      edit,
       remove,
     };
   },

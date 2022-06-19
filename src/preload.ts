@@ -19,14 +19,19 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.send('remove:clipboard', index);
   },
   // template
-  saveTemplate: (title: string, text: string) => {
-    ipcRenderer.send('save:template', title, text);
+  saveTemplate: (index: number | string, title: string, text: string) => {
+    ipcRenderer.send('save:template', index, title, text);
   },
   orderTemplate: () => {
     ipcRenderer.send('order:template');
   },
   deliverTemplate: (action: (templates: Template[]) => void) => {
     ipcRenderer.on('deliver:template', (event, templates) => action(templates));
+  },
+  getTemplate: (index: number) => {
+    return ipcRenderer
+      .invoke('get:template', index)
+      .then((template: Template) => template);
   },
   pasteTemplate: (index: number) => {
     ipcRenderer.send('paste:template', index);

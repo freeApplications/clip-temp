@@ -97,6 +97,10 @@ const createEditMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
     click: () => sender.send('store:window-event', 'paste'),
   },
   {
+    label: 'Edit',
+    click: () => sender.send('store:window-event', 'edit'),
+  },
+  {
     label: 'Delete',
     accelerator: 'Delete',
     click: () => sender.send('store:window-event', 'remove'),

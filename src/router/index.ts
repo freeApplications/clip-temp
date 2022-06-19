@@ -15,7 +15,8 @@ const routes: Array<RouteRecordRaw> = [
     component: template,
   },
   {
-    path: '/template/edit',
+    path: '/template/:index',
+    props: true,
     name: 'template-edit',
     component: templateEdit,
   },

@@ -9,9 +9,14 @@ declare global {
       pasteClipboard: (index: number) => void;
       removeClipboard: (index: number) => void;
       // template
-      saveTemplate: (title: string, text: string) => void;
+      saveTemplate: (
+        index: number | string,
+        title: string,
+        text: string
+      ) => void;
       orderTemplate: () => void;
       deliverTemplate: (action: (templates: Template[]) => void) => void;
+      getTemplate: (index: number) => Promise;
       pasteTemplate: (index: number) => void;
       removeTemplate: (index: number) => void;
       // window

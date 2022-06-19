@@ -18,21 +18,37 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
+import { Template } from '~/@types';
 
 type State = {
+  index: string;
   title: string;
   text: string;
 };
 export default defineComponent({
-  setup() {
+  props: {
+    index: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
     const { api } = window;
     const router = useRouter();
 
     // data
     const state = reactive<State>({
+      index: props.index,
       title: '',
       text: '',
     });
+    const index = state.index.match(/\d+/) ? Number(state.index) : state.index;
+    if (typeof index === 'number') {
+      api.getTemplate(Number(state.index)).then((template: Template) => {
+        state.title = template.title;
+        state.text = template.text;
+      });
+    }
     const { title, text } = toRefs(state);
 
     // methods
