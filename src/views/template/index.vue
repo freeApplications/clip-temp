@@ -3,6 +3,7 @@ text-list(
   v-model="selectIndex"
   :list="templates"
   @paste="paste"
+  @add="isEditable ? add() : undefined"
   @edit="isEditable ? edit() : undefined"
   @remove="remove"
 )

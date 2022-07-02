@@ -4,8 +4,10 @@ import {
   MenuItemConstructorOptions as MenuItemOptions,
   WebContents,
   nativeTheme,
+  ipcMain,
 } from 'electron';
 import path from 'path';
+import { EditActions } from '~/@types';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -20,6 +22,7 @@ const createMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
     ],
   },
   {
+    id: 'edit',
     label: 'Edit',
     submenu: createEditMenuTemplate(sender),
   },
@@ -90,22 +93,46 @@ const createMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
   },
 ];
 
-const createEditMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
+const createEditMenuTemplate = (
+  sender: WebContents,
+  editable: EditActions[] = [],
+  isContextMenu = false
+): MenuItemOptions[] => [
   {
     label: 'Paste',
     accelerator: 'Enter',
     click: () => sender.send('store:window-event', 'paste'),
+    enabled: editable.includes('paste'),
+  },
+  {
+    label: 'Add',
+    click: () => sender.send('store:window-event', 'add'),
+    enabled: editable.includes('add'),
+    visible: !isContextMenu,
   },
   {
     label: 'Edit',
     click: () => sender.send('store:window-event', 'edit'),
+    enabled: editable.includes('edit'),
   },
   {
     label: 'Delete',
     accelerator: 'Delete',
     click: () => sender.send('store:window-event', 'remove'),
+    enabled: editable.includes('remove'),
   },
 ];
+
+ipcMain.on('change:editable', (event, editable: EditActions[]) => {
+  const menu = Menu.getApplicationMenu();
+  if (menu === null) return;
+  const editMenu = menu.getMenuItemById('edit');
+  if (editMenu === null || !editMenu.submenu) return;
+  editMenu.submenu.items.forEach((item) => {
+    const label = item.label.toLowerCase();
+    item.enabled = editable.includes(label as never);
+  });
+});
 
 const createThemeMenuTemplate = (): MenuItemOptions[] => {
   const themeMenu = [
@@ -156,6 +183,9 @@ export const createAppMenu = (sender: WebContents): Menu => {
   return Menu.buildFromTemplate(createMenuTemplate(sender));
 };
 
-export const createEditMenu = (sender: WebContents): Menu => {
-  return Menu.buildFromTemplate(createEditMenuTemplate(sender));
+export const createEditMenu = (
+  sender: WebContents,
+  editable: EditActions[]
+): Menu => {
+  return Menu.buildFromTemplate(createEditMenuTemplate(sender, editable, true));
 };

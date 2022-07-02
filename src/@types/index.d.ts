@@ -11,7 +11,8 @@ export type Template = {
   text: string;
 };
 
-export type WindowEventType = 'reload' | 'paste' | 'edit' | 'remove';
+export type EditActions = 'paste' | 'add' | 'edit' | 'remove';
+export type WindowEventType = 'reload' | EditActions;
 export type WindowEvent = {
   type: WindowEventType;
   args: unknown[];

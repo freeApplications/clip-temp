@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { Clipboard, WindowEventType } from '~/@types';
+import { Clipboard, Template, WindowEventType, EditActions } from '~/@types';
 
 // Expose ipcRenderer to the client
 contextBridge.exposeInMainWorld('api', {
@@ -40,8 +40,11 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.send('remove:template', index);
   },
   // window
-  showEditMenu: () => {
-    ipcRenderer.send('show:edit-menu');
+  showEditMenu: (editable: EditActions[]) => {
+    ipcRenderer.send('show:edit-menu', editable);
+  },
+  changeEditable: (editable: EditActions[]) => {
+    ipcRenderer.send('change:editable', editable);
   },
   pressKey: (key: string, shiftKey: boolean) => {
     ipcRenderer.send('press:key', key, shiftKey);

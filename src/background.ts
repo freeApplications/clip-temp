@@ -128,8 +128,8 @@ if (isDevelopment) {
   }
 }
 
-ipcMain.on('show:edit-menu', (event) => {
-  createEditMenu(event.sender).popup();
+ipcMain.on('show:edit-menu', (event, editable) => {
+  createEditMenu(event.sender, editable).popup();
 });
 ipcMain.on('press:key', (event, key: string, shiftKey: boolean) => {
   try {

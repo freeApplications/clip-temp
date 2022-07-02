@@ -1,4 +1,4 @@
-import { Clipboard, Template, WindowEventType } from './';
+import { Clipboard, Template, WindowEventType, EditActions } from './';
 
 declare global {
   interface Window {
@@ -20,7 +20,8 @@ declare global {
       pasteTemplate: (index: number) => void;
       removeTemplate: (index: number) => void;
       // window
-      showEditMenu: () => void;
+      showEditMenu: (editable: EditActions[]) => void;
+      changeEditable: (editable: EditActions[]) => void;
       pressKey: (key: string, shiftKey: boolean) => void;
       closeWindow: () => void;
       storeWindowEvent: (

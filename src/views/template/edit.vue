@@ -55,6 +55,9 @@ export default defineComponent({
     // computed
     const isEdit = computed(() => typeof state.index === 'number');
 
+    // change editable
+    api.changeEditable(isEdit.value ? ['remove'] : []);
+
     // load template
     if (isEdit.value) {
       api.getTemplate(Number(state.index)).then((template: Template) => {

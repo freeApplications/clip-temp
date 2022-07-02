@@ -26,7 +26,7 @@
       :class="{ selected: selectIndex === index }"
       @click="selectIndex = index"
       @dblclick="paste"
-      @click.right="showEditMenu"
+      @click.right="selectIndex = index; showEditMenu(editable)"
     )
       template(
         v-for="partOfText in isClipboard ? item.text.parts : item.title.parts"
@@ -75,6 +75,7 @@ import {
   ref,
   toRefs,
   computed,
+  ComputedRef,
   watch,
   onMounted,
   nextTick,
@@ -87,6 +88,7 @@ import ClipTemp from '~/models/clip-temp';
 import { HANDLING_KEYS } from '~/renderer-constants';
 import store from '~/store';
 import { useRoute } from 'vue-router';
+import { EditActions } from '~/@types';
 
 type State = {
   filterWord: string;
@@ -126,8 +128,12 @@ export default defineComponent({
     const list = ref<HTMLDivElement>();
 
     // computed
+    const route = useRoute();
     const isClipboard = computed(() => {
-      return useRoute().name === 'clipboard';
+      return route && route.name === 'clipboard';
+    });
+    const isTemplate = computed(() => {
+      return route && route.name === 'template';
     });
     const listOfText = computed<ClipTemp[]>(() => {
       return props.list
@@ -143,6 +149,16 @@ export default defineComponent({
       return props.list.findIndex((item) =>
         item.equals(listOfText.value[state.selectIndex])
       );
+    });
+    const editable: ComputedRef<EditActions[]> = computed(() => {
+      const editable: EditActions[] = [];
+      if (isSelected.value) {
+        editable.push('paste', 'remove');
+        if (isTemplate.value) {
+          editable.push('edit');
+        }
+      }
+      return editable;
     });
 
     // methods
@@ -172,7 +188,7 @@ export default defineComponent({
     };
 
     // watch
-    const { closeWindow } = window.api;
+    const { changeEditable, closeWindow } = window.api;
     watch(listOfText, (newValue) => {
       if (newValue.length > state.selectIndex) return;
       const adjust = newValue.length ? 1 : 0;
@@ -180,6 +196,12 @@ export default defineComponent({
     });
     watch(originIndex, (newValue) => {
       context.emit('update:modelValue', newValue);
+    });
+    watch(editable, (newValue: EditActions[]) => {
+      if (isTemplate.value) {
+        newValue.push('add');
+      }
+      changeEditable(newValue);
     });
     watch(
       () => store.state.keyEvent,
@@ -239,6 +261,7 @@ export default defineComponent({
         if (!windowEvent || !isSelected.value) return;
         switch (windowEvent.type) {
           case 'paste':
+          case 'add':
           case 'edit':
           case 'remove':
             context.emit(windowEvent.type);
@@ -270,6 +293,7 @@ export default defineComponent({
       listOfText,
       isEmpty,
       isSelected,
+      editable,
       // methods
       paste,
       edit,
