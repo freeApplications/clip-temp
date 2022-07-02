@@ -4,4 +4,5 @@ export const HANDLING_KEYS = {
   DOWN: 'ArrowDown',
   ESCAPE: 'Escape',
   DELETE: 'Delete',
+  TAB: 'Tab',
 };

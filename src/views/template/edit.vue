@@ -22,9 +22,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, computed } from 'vue';
+import { defineComponent, reactive, toRefs, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Template } from '~/@types';
+import store from '~/store';
+import { HANDLING_KEYS } from '~/renderer-constants';
 
 type State = {
   index: number | string;
@@ -60,6 +62,15 @@ export default defineComponent({
         state.text = template.text;
       });
     }
+
+    // watch
+    const { closeWindow } = window.api;
+    watch(
+      () => store.state.keyEvent,
+      (keyEvent) => {
+        if (keyEvent.key === HANDLING_KEYS.ESCAPE) closeWindow();
+      }
+    );
 
     // methods
     const goIndex = () => router.push('/template');

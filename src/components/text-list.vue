@@ -184,6 +184,9 @@ export default defineComponent({
     watch(
       () => store.state.keyEvent,
       (keyEvent) => {
+        if (Object.values(HANDLING_KEYS).includes(keyEvent.key)) {
+          keyEvent.preventDefault();
+        }
         if (keyEvent.key === HANDLING_KEYS.ESCAPE) {
           if (state.filterWord.length) {
             state.filterWord = '';
