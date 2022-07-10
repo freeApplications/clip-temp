@@ -67,11 +67,11 @@ export default defineComponent({
     }
 
     // watch
-    const { closeWindow } = window.api;
+    const { closeMainWindow } = window.api;
     watch(
       () => store.state.keyEvent,
       (keyEvent) => {
-        if (keyEvent.key === HANDLING_KEYS.ESCAPE) closeWindow();
+        if (keyEvent.key === HANDLING_KEYS.ESCAPE) closeMainWindow();
       }
     );
 

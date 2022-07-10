@@ -17,3 +17,5 @@ export type WindowEvent = {
   type: WindowEventType;
   args: unknown[];
 };
+
+export type PasteMode = 'normal' | 'fifo';

@@ -8,6 +8,9 @@ declare global {
       deliverClipboard: (action: (histories: Clipboard[]) => void) => void;
       pasteClipboard: (index: number) => void;
       removeClipboard: (index: number) => void;
+      deliverFirstInFirstOut: (
+        action: (firstInFirstOUt: string[]) => void
+      ) => void;
       // template
       saveTemplate: (
         index: number | string,
@@ -23,10 +26,11 @@ declare global {
       showEditMenu: (editable: EditActions[]) => void;
       changeEditable: (editable: EditActions[]) => void;
       pressKey: (key: string, shiftKey: boolean) => void;
-      closeWindow: () => void;
+      closeMainWindow: () => void;
       storeWindowEvent: (
         action: (type: WindowEventType, ...args: unknown[]) => void
       ) => void;
+      resizeSubWindow: (height: number) => void;
     };
   }
 }

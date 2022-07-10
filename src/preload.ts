@@ -18,6 +18,11 @@ contextBridge.exposeInMainWorld('api', {
   removeClipboard: (index: number) => {
     ipcRenderer.send('remove:clipboard', index);
   },
+  deliverFirstInFirstOut: (action: (firstInFirstOUt: string[]) => void) => {
+    ipcRenderer.on('deliver:first-in-first-out', (event, firstInFirstOUt) =>
+      action(firstInFirstOUt)
+    );
+  },
   // template
   saveTemplate: (index: number | string, title: string, text: string) => {
     ipcRenderer.send('save:template', index, title, text);
@@ -49,8 +54,8 @@ contextBridge.exposeInMainWorld('api', {
   pressKey: (key: string, shiftKey: boolean) => {
     ipcRenderer.send('press:key', key, shiftKey);
   },
-  closeWindow: () => {
-    ipcRenderer.send('close:window');
+  closeMainWindow: () => {
+    ipcRenderer.send('close:main-window');
   },
   storeWindowEvent: (
     action: (type: WindowEventType, ...args: unknown[]) => void
@@ -58,5 +63,8 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.on('store:window-event', (event, type, ...args) =>
       action(type, ...args)
     );
+  },
+  resizeSubWindow: (height: number) => {
+    ipcRenderer.send('resize:sub-window', height);
   },
 });

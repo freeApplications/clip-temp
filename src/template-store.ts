@@ -1,7 +1,7 @@
-import { clipboard, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 import Store from 'electron-store';
+import { pasteClipboard } from './clipboard-store';
 import { Template } from '~/@types';
-import robot from 'robotjs';
 
 const store = new Store();
 const templates: Template[] = (store.get('templates') as Template[]) || [];
@@ -30,14 +30,7 @@ ipcMain.handle('get:template', (event, index) => {
 });
 ipcMain.on('paste:template', (event, index: number) => {
   const template = templates[index];
-  clipboard.writeText(template.text);
-  ipcMain.emit('close:window', event, () => {
-    if (process.platform === 'win32') {
-      robot.keyTap('v', 'control');
-    } else {
-      robot.keyTap('v', 'command');
-    }
-  });
+  pasteClipboard(event, template.text);
   template.time = Date.now();
   store.set('templates', templates);
 });

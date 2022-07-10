@@ -4,17 +4,24 @@ import {
   app,
   protocol,
   BrowserWindow,
+  BrowserWindowConstructorOptions,
   globalShortcut,
   ipcMain,
   Tray,
   Menu,
+  screen,
 } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 import path from 'path';
 import './clipboard-store';
 import './template-store';
-import { createAppMenu, createEditMenu } from './menu-factory';
+import {
+  createAppMenu,
+  createEditMenu,
+  createPasteModeMenu,
+  changePasteMode,
+} from './menu-factory';
 import robot from 'robotjs';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -24,18 +31,65 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ]);
 
-let win: BrowserWindow | null;
-async function createWindow() {
-  if (win && !win.isDestroyed()) {
-    win.webContents.send('store:window-event', 'reload');
-    win.show();
+let mainWin: BrowserWindow | null;
+async function createMainWindow() {
+  if (mainWin && !mainWin.isDestroyed()) {
+    mainWin.webContents.send('store:window-event', 'reload');
+    mainWin.show();
     return;
   }
   // Create the browser window.
-  win = new BrowserWindow({
+  mainWin = createWindow();
+  Menu.setApplicationMenu(createAppMenu(mainWin.webContents));
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    // Load the url of the dev server if in development mode
+    await mainWin.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
+  } else {
+    createProtocol('app');
+    // Load the index.html when not in development
+    await mainWin.loadURL('app://./index.html');
+  }
+  mainWin.on('close', withoutCloseToHide);
+}
+
+function withoutCloseToHide(event: Event) {
+  event.preventDefault();
+  mainWin?.minimize();
+  mainWin?.hide();
+}
+
+const SUB_WINDOW_WIDTH = 400;
+let subWin: BrowserWindow | null;
+let isMoved = false;
+async function createSubWindow() {
+  if (subWin && !subWin.isDestroyed()) return;
+  // Create the browser window.
+  subWin = createWindow({
+    alwaysOnTop: true,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    skipTaskbar: true,
+  });
+  subWin.setMenuBarVisibility(false);
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    // Load the url of the dev server if in development mode
+    await subWin.loadURL(
+      process.env.WEBPACK_DEV_SERVER_URL + 'first-in-first-out'
+    );
+  } else {
+    // Load the first-in-first-out.html when not in development
+    await subWin.loadURL('app://./first-in-first-out.html');
+  }
+  subWin.on('moved', () => (isMoved = true));
+  subWin.on('closed', () => changePasteMode('normal'));
+}
+
+function createWindow(options: BrowserWindowConstructorOptions = {}) {
+  return new BrowserWindow({
+    show: false,
     icon: path.join(__static, 'icon.png'),
-    width: 800,
-    height: 600,
     webPreferences: {
       // Required for Spectron testing
       enableRemoteModule: !!process.env.IS_TEST,
@@ -49,28 +103,12 @@ async function createWindow() {
       // Secure IPC communication
       preload: path.join(__dirname, 'preload.js'),
     },
+    ...options,
   });
-  Menu.setApplicationMenu(createAppMenu(win.webContents));
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
-    // Load the url of the dev server if in development mode
-    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
-    if (!process.env.IS_TEST) win.webContents.openDevTools();
-  } else {
-    createProtocol('app');
-    // Load the index.html when not in development
-    await win.loadURL('app://./index.html');
-  }
-  win.on('close', withoutCloseToHide);
 }
 
-const withoutCloseToHide = (event: Event) => {
-  event.preventDefault();
-  win?.minimize();
-  win?.hide();
-};
-
 app.on('before-quit', () => {
-  win?.removeListener('close', withoutCloseToHide);
+  mainWin?.removeListener('close', withoutCloseToHide);
 });
 
 // Quit when all windows are closed.
@@ -86,7 +124,7 @@ app.on('window-all-closed', () => {
 app.on('activate', async () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) await createWindow();
+  if (BrowserWindow.getAllWindows().length === 0) await createMainWindow();
 });
 
 // This method will be called when Electron has finished
@@ -101,16 +139,18 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString());
     }
   }
+  await createMainWindow();
 });
 
 let tray: Tray | null = null;
 app.whenReady().then(() => {
   // Register global shortcut to show the window
-  globalShortcut.register('CommandOrControl+Shift+V', createWindow);
+  globalShortcut.register('Control+Shift+V', createMainWindow);
   // Make tray icon wait in system's notification area
   tray = new Tray(path.join(__static, 'icon.png'));
   tray.setToolTip(app.getName());
-  tray.on('click', createWindow);
+  tray.on('click', createMainWindow);
+  tray.on('right-click', () => createPasteModeMenu().popup());
 });
 
 // Exit cleanly on request from parent process in development mode.
@@ -138,9 +178,38 @@ ipcMain.on('press:key', (event, key: string, shiftKey: boolean) => {
     console.log(e);
   }
 });
-ipcMain.on('close:window', (event, action?: () => void) => {
+ipcMain.on('close:main-window', (event, action?: () => void) => {
   if (action) {
-    win?.once('hide', action);
+    mainWin?.once('hide', action);
   }
-  win?.close();
+  mainWin?.close();
+});
+ipcMain.on('show:sub-window', async () => {
+  await createSubWindow();
+});
+ipcMain.on('resize:sub-window', (event, height) => {
+  if (!subWin || subWin.isDestroyed()) return;
+  const { width, height: displayHeight } = screen.getPrimaryDisplay().workArea;
+  if (isMoved) {
+    subWin.setContentSize(SUB_WINDOW_WIDTH, height, true);
+  } else {
+    subWin.setContentBounds(
+      {
+        x: width - SUB_WINDOW_WIDTH,
+        y: displayHeight - height,
+        width: SUB_WINDOW_WIDTH,
+        height,
+      },
+      true
+    );
+  }
+  if (!subWin.isVisible()) {
+    subWin.showInactive();
+  }
+});
+ipcMain.on('close:sub-window', () => {
+  if (subWin && !subWin.isDestroyed()) {
+    subWin.close();
+  }
+  isMoved = false;
 });

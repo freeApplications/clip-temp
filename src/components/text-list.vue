@@ -188,7 +188,7 @@ export default defineComponent({
     };
 
     // watch
-    const { changeEditable, closeWindow } = window.api;
+    const { changeEditable, closeMainWindow } = window.api;
     watch(listOfText, (newValue) => {
       if (newValue.length > state.selectIndex) return;
       const adjust = newValue.length ? 1 : 0;
@@ -213,7 +213,7 @@ export default defineComponent({
           if (state.filterWord.length) {
             state.filterWord = '';
           } else {
-            closeWindow();
+            closeMainWindow();
           }
           return;
         }

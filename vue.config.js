@@ -2,6 +2,10 @@
 const path = require('path');
 
 module.exports = {
+  pages: {
+    index: 'src/pages/main.ts',
+    'first-in-first-out': 'src/pages/first-in-first-out.ts',
+  },
   pluginOptions: {
     electronBuilder: {
       externals: ['clipboard-event'],

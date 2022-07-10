@@ -7,7 +7,8 @@ import {
   ipcMain,
 } from 'electron';
 import path from 'path';
-import { EditActions } from '~/@types';
+import { EditActions, PasteMode } from '~/@types';
+import { isPasteMode } from './clipboard-store';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -99,6 +100,11 @@ const createEditMenuTemplate = (
   isContextMenu = false
 ): MenuItemOptions[] => [
   {
+    label: 'Mode',
+    submenu: createPasteModeMenuTemplate(),
+    visible: editable.length === 0,
+  },
+  {
     label: 'Paste',
     accelerator: 'Enter',
     click: () => sender.send('store:window-event', 'paste'),
@@ -123,6 +129,34 @@ const createEditMenuTemplate = (
   },
 ];
 
+const createPasteModeMenuTemplate = (): MenuItemOptions[] => [
+  {
+    id: 'mode-normal',
+    label: 'Normal',
+    type: 'checkbox' as const,
+    checked: isPasteMode('normal'),
+    click: () => changePasteMode('normal'),
+  },
+  {
+    id: 'mode-fifo',
+    label: 'First-In First-Out',
+    type: 'checkbox' as const,
+    checked: isPasteMode('fifo'),
+    click: () => changePasteMode('fifo'),
+  },
+];
+
+export const changePasteMode = (mode: PasteMode): void => {
+  const menu = Menu.getApplicationMenu();
+  if (menu === null) return;
+  for (const item of ['normal', 'fifo']) {
+    const menuItem = menu.getMenuItemById(`mode-${item}`);
+    if (menuItem === null) continue;
+    menuItem.checked = mode === item;
+  }
+  ipcMain.emit(`change:paste-mode:${mode}`);
+};
+
 ipcMain.on('change:editable', (event, editable: EditActions[]) => {
   const menu = Menu.getApplicationMenu();
   if (menu === null) return;
@@ -130,6 +164,7 @@ ipcMain.on('change:editable', (event, editable: EditActions[]) => {
   if (editMenu === null || !editMenu.submenu) return;
   editMenu.submenu.items.forEach((item) => {
     const label = item.label.toLowerCase();
+    if (label === 'mode') return;
     item.enabled = editable.includes(label as never);
   });
 });
@@ -188,4 +223,8 @@ export const createEditMenu = (
   editable: EditActions[]
 ): Menu => {
   return Menu.buildFromTemplate(createEditMenuTemplate(sender, editable, true));
+};
+
+export const createPasteModeMenu = (): Menu => {
+  return Menu.buildFromTemplate(createPasteModeMenuTemplate());
 };

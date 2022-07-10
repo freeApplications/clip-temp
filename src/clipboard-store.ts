@@ -1,11 +1,23 @@
-import { app, clipboard, ipcMain } from 'electron';
+import {
+  app,
+  clipboard,
+  ipcMain,
+  BrowserWindow,
+  globalShortcut,
+  IpcMainEvent,
+} from 'electron';
 import clipboardListener from 'clipboard-event';
-import { Clipboard } from '~/@types';
+import { Clipboard, PasteMode } from '~/@types';
 import robot from 'robotjs';
+
+let mode: PasteMode = 'normal';
+export const isPasteMode = (modeOfArgs: PasteMode): boolean => {
+  return mode === modeOfArgs;
+};
 
 const histories: Clipboard[] = [];
 let recent: Clipboard | null = null;
-const upsertHistory = () => {
+function upsertHistory() {
   const current = {
     time: Date.now(),
     text: clipboard.readText(),
@@ -23,6 +35,7 @@ const upsertHistory = () => {
     Object.assign(recent, current);
     return;
   }
+  insertFirstInFirstOut();
   const same = histories.find((item) => item.text === current.text);
   if (same) {
     // When exist same item, update timestamp
@@ -32,7 +45,59 @@ const upsertHistory = () => {
     histories.push(current);
     recent = current;
   }
+}
+
+let firstInFirstOut: string[] = [];
+function insertFirstInFirstOut() {
+  if (!isPasteMode('fifo')) {
+    return;
+  }
+  if (pasteByClipboard || pasteByFirstInFirstOut) {
+    pasteByClipboard = false;
+    pasteByFirstInFirstOut = false;
+    if (firstInFirstOut.length > 0) {
+      takeoverPasteShortcut();
+    }
+    return;
+  }
+  firstInFirstOut.push(clipboard.readText());
+  takeoverPasteShortcut();
+  deliverFirstInFirstOut();
+}
+
+function deliverFirstInFirstOut() {
+  const window = BrowserWindow.getAllWindows().find((window) =>
+    window.isEnabled()
+  );
+  if (window) {
+    window.webContents.send('deliver:first-in-first-out', firstInFirstOut);
+  }
+}
+
+let pasteByClipboard = false;
+export const pasteClipboard = (event: IpcMainEvent, text: string): void => {
+  if (isPasteMode('fifo')) {
+    pasteByClipboard = true;
+    globalShortcut.unregister('Control+V');
+  }
+  clipboard.writeText(text);
+  ipcMain.emit('close:main-window', event, () => {
+    robot.keyTap('v', 'control');
+  });
 };
+
+let pasteByFirstInFirstOut = false;
+function takeoverPasteShortcut() {
+  globalShortcut.register('Control+V', async () => {
+    globalShortcut.unregister('Control+V');
+    if (firstInFirstOut.length === 0) return;
+    pasteByFirstInFirstOut = true;
+    clipboard.writeText(firstInFirstOut.shift() as never);
+    robot.keyToggle('control', 'down');
+    robot.keyTap('v');
+    deliverFirstInFirstOut();
+  });
+}
 
 app.whenReady().then(() => {
   clipboardListener.startListening();
@@ -48,15 +113,21 @@ ipcMain.on('order:clipboard', (event) => {
 });
 ipcMain.on('paste:clipboard', (event, index: number) => {
   const { text } = histories[index];
-  clipboard.writeText(text);
-  ipcMain.emit('close:window', event, () => {
-    if (process.platform === 'win32') {
-      robot.keyTap('v', 'control');
-    } else {
-      robot.keyTap('v', 'command');
-    }
-  });
+  pasteClipboard(event, text);
 });
 ipcMain.on('remove:clipboard', (event, index: number) => {
   histories.splice(index, 1);
+});
+ipcMain.on('change:paste-mode:normal', () => {
+  if (isPasteMode('normal')) return;
+  mode = 'normal';
+  globalShortcut.unregister('Control+V');
+  ipcMain.emit('close:sub-window');
+});
+ipcMain.on('change:paste-mode:fifo', () => {
+  if (isPasteMode('fifo')) return;
+  mode = 'fifo';
+  firstInFirstOut = [];
+  ipcMain.emit('close:main-window');
+  ipcMain.emit('show:sub-window');
 });
