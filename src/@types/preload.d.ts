@@ -11,6 +11,7 @@ declare global {
       deliverFirstInFirstOut: (
         action: (firstInFirstOUt: string[]) => void
       ) => void;
+      toggleFirstInFirstOutRepeat: () => void;
       // template
       saveTemplate: (
         index: number | string,
@@ -31,6 +32,8 @@ declare global {
         action: (type: WindowEventType, ...args: unknown[]) => void
       ) => void;
       resizeSubWindow: (height: number) => void;
+      closeSubWindow: () => void;
+      showCloseMenu: () => void;
     };
   }
 }

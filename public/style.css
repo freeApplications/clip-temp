@@ -1,0 +1,65 @@
+:root {
+  --fallback-title-bar-height: 2rem;
+}
+body {
+  font-family: "Open Sans Light", "Open Sans", "MS Tai Le", "MS Sans Serif", serif;
+  margin: 0;
+}
+.draggable {
+  app-region: drag;
+  /* Pre-fix app-region during standardization process */
+  -webkit-app-region: drag;
+}
+.non-draggable {
+  app-region: no-drag;
+  /* Pre-fix app-region during standardization process */
+  -webkit-app-region: no-drag;
+}
+#title-bar-container {
+  position: absolute;
+  top: env(titlebar-area-y, 0);
+  width: 100%;
+  height: env(titlebar-area-height, var(--fallback-title-bar-height));
+  background-color: #4c4a48;
+  color: white;
+}
+#title-bar {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: env(titlebar-area-x, 0);
+  width: env(titlebar-area-width, 100%);
+  height: 100%;
+  padding: 0 0.5rem;
+  user-select: none;
+}
+#title-bar > img.icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 5px;
+}
+#title-bar > span.title {
+  font-size: 0.75rem;
+  letter-spacing: 0.03125rem;
+  margin-right: 0.5rem;
+}
+#title-bar > img.repeat {
+  filter: brightness(85%);
+  cursor: pointer;
+}
+#title-bar > img.repeat.on {
+  filter: brightness(0%) invert(40%) sepia(40%) saturate(3000%) hue-rotate(128deg);
+}
+#close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: env(titlebar-area-height, var(--fallback-title-bar-height));
+}
+#close:hover {
+  background-color: crimson;
+}
+#app {
+  padding-top: env(titlebar-area-height, var(--fallback-title-bar-height));
+}

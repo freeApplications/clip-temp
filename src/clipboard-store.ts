@@ -48,21 +48,24 @@ function upsertHistory() {
 }
 
 let firstInFirstOut: string[] = [];
+let repeat = false;
 function insertFirstInFirstOut() {
   if (!isPasteMode('fifo')) {
     return;
   }
+  const push = (!pasteByClipboard && !pasteByFirstInFirstOut) || repeat;
   if (pasteByClipboard || pasteByFirstInFirstOut) {
     pasteByClipboard = false;
     pasteByFirstInFirstOut = false;
     if (firstInFirstOut.length > 0) {
       takeoverPasteShortcut();
     }
-    return;
   }
-  firstInFirstOut.push(clipboard.readText());
-  takeoverPasteShortcut();
-  deliverFirstInFirstOut();
+  if (push) {
+    firstInFirstOut.push(clipboard.readText());
+    takeoverPasteShortcut();
+    deliverFirstInFirstOut();
+  }
 }
 
 function deliverFirstInFirstOut() {
@@ -128,6 +131,11 @@ ipcMain.on('change:paste-mode:fifo', () => {
   if (isPasteMode('fifo')) return;
   mode = 'fifo';
   firstInFirstOut = [];
+  repeat = false;
   ipcMain.emit('close:main-window');
   ipcMain.emit('show:sub-window');
+});
+ipcMain.on('toggle:first-in-first-out-repeat', () => {
+  if (!isPasteMode('fifo')) return;
+  repeat = !repeat;
 });

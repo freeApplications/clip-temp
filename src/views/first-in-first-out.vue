@@ -52,8 +52,15 @@ export default defineComponent({
     const { showCloseMenu } = window.api;
 
     // lifecycle
+    const { toggleFirstInFirstOutRepeat, closeSubWindow } = window.api;
     onMounted(() => {
-      document.title += ' | First-In First-Out';
+      const repeat = document.body.querySelector('#title-bar .repeat');
+      repeat?.addEventListener('click', () => {
+        repeat.classList.toggle('on');
+        toggleFirstInFirstOutRepeat();
+      });
+      const close = document.body.querySelector('#close');
+      close?.addEventListener('click', closeSubWindow);
       resizeSubWindow(document.body.scrollHeight);
     });
 

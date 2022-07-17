@@ -21,6 +21,7 @@ import {
   createEditMenu,
   createPasteModeMenu,
   changePasteMode,
+  createCloseMenu,
 } from './menu-factory';
 import robot from 'robotjs';
 
@@ -70,9 +71,10 @@ async function createSubWindow() {
     minimizable: false,
     maximizable: false,
     fullscreenable: false,
+    titleBarStyle: 'hidden',
     skipTaskbar: true,
   });
-  subWin.setMenuBarVisibility(false);
+  subWin.removeMenu();
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await subWin.loadURL(
@@ -212,4 +214,7 @@ ipcMain.on('close:sub-window', () => {
     subWin.close();
   }
   isMoved = false;
+});
+ipcMain.on('show:close-menu', () => {
+  createCloseMenu().popup();
 });

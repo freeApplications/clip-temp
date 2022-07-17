@@ -1,0 +1,5 @@
+{
+  "name": "clip-temp | First-In First-Out",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay"]
+}

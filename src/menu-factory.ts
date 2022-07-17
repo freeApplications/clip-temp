@@ -228,3 +228,7 @@ export const createEditMenu = (
 export const createPasteModeMenu = (): Menu => {
   return Menu.buildFromTemplate(createPasteModeMenuTemplate());
 };
+
+export const createCloseMenu = (): Menu => {
+  return Menu.buildFromTemplate([{ label: 'Exit', role: 'close' }]);
+};

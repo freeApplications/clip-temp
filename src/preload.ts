@@ -23,6 +23,9 @@ contextBridge.exposeInMainWorld('api', {
       action(firstInFirstOUt)
     );
   },
+  toggleFirstInFirstOutRepeat: () => {
+    ipcRenderer.send('toggle:first-in-first-out-repeat');
+  },
   // template
   saveTemplate: (index: number | string, title: string, text: string) => {
     ipcRenderer.send('save:template', index, title, text);
@@ -66,5 +69,11 @@ contextBridge.exposeInMainWorld('api', {
   },
   resizeSubWindow: (height: number) => {
     ipcRenderer.send('resize:sub-window', height);
+  },
+  closeSubWindow: () => {
+    ipcRenderer.send('close:sub-window');
+  },
+  showCloseMenu: () => {
+    ipcRenderer.send('show:close-menu');
   },
 });
