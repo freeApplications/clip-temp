@@ -181,10 +181,14 @@ ipcMain.on('press:key', (event, key: string, shiftKey: boolean) => {
   }
 });
 ipcMain.on('close:main-window', (event, action?: () => void) => {
-  if (action) {
-    mainWin?.once('hide', action);
+  if (mainWin && !mainWin.isDestroyed()) {
+    if (action) {
+      mainWin.once('hide', action);
+    }
+    if (mainWin.isVisible()) {
+      mainWin.close();
+    }
   }
-  mainWin?.close();
 });
 ipcMain.on('show:sub-window', async () => {
   await createSubWindow();
