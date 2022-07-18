@@ -7,9 +7,13 @@
       v-model="title"
     )
     .text-wide template:
-    textarea(
-      v-model="text"
-    )
+    .text-padding
+      | {{ text }}
+      textarea(
+        ref="textarea"
+        v-model="text"
+        @input="fitContent"
+      )
   .footer
     .left
       button(@click="save") Save
@@ -22,7 +26,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, computed, watch } from 'vue';
+import {
+  defineComponent,
+  reactive,
+  toRefs,
+  ref,
+  computed,
+  nextTick,
+  watch,
+} from 'vue';
 import { useRouter } from 'vue-router';
 import { Template } from '~/@types';
 import store from '~/store';
@@ -52,6 +64,9 @@ export default defineComponent({
     });
     const { title, text } = toRefs(state);
 
+    // refs
+    const textarea = ref<HTMLTextAreaElement>();
+
     // computed
     const isEdit = computed(() => typeof state.index === 'number');
 
@@ -63,6 +78,7 @@ export default defineComponent({
       api.getTemplate(Number(state.index)).then((template: Template) => {
         state.title = template.title;
         state.text = template.text;
+        nextTick(fitContent);
       });
     }
 
@@ -85,23 +101,45 @@ export default defineComponent({
       api.removeTemplate(state.index as number);
       goIndex();
     };
+    const fitContent = () => {
+      const refsTextarea = textarea.value;
+      const wrapper = refsTextarea?.parentElement;
+      if (!refsTextarea || !wrapper) return;
+      refsTextarea.style.width = 'auto';
+      const width =
+        refsTextarea.scrollWidth > wrapper.clientWidth
+          ? refsTextarea.scrollWidth
+          : wrapper.clientWidth;
+      refsTextarea.style.width = `${width}px`;
+      refsTextarea.style.height = 'auto';
+      const height =
+        refsTextarea.scrollHeight > wrapper.clientHeight
+          ? refsTextarea.scrollHeight
+          : wrapper.clientHeight;
+      refsTextarea.style.height = `${height}px`;
+    };
 
     return {
       // data
       title,
       text,
+      // refs
+      textarea,
       // computed
       isEdit,
       // methods
       goIndex,
       save,
       remove,
+      fitContent,
     };
   },
 });
 </script>
 
 <style scoped lang="scss">
+@import '../../assets/css/colors';
+
 #template-edit {
   display: flex;
   flex-flow: column;
@@ -112,6 +150,7 @@ export default defineComponent({
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
   grid-gap: 0.5rem 1rem;
+  height: 90%;
   margin-bottom: 0.5rem;
   text-align: left;
   .text-wide {
@@ -123,12 +162,55 @@ export default defineComponent({
     font-size: 0.75rem;
     letter-spacing: 0.5px;
   }
+  input[type='text'],
+  .text-padding,
   textarea {
-    height: 100%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
+  }
+  input[type='text'],
+  .text-padding {
+    border: 1px solid;
+  }
+  .text-padding {
+    position: relative;
     overflow: auto;
     line-height: 1.5;
-    white-space: nowrap;
-    resize: none;
+    white-space: pre;
+    textarea {
+      position: absolute;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+      border: none;
+      line-height: 1.5;
+      white-space: nowrap;
+      resize: none;
+    }
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .form {
+    input[type='text'],
+    .text-padding,
+    textarea {
+      border-color: $light-border;
+      background-color: $light-background-main;
+      color: $light-font;
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .form {
+    input[type='text'],
+    .text-padding,
+    textarea {
+      border-color: $dark-border;
+      background-color: $dark-background-main;
+      color: $dark-font;
+    }
   }
 }
 </style>

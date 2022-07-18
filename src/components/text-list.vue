@@ -53,10 +53,11 @@
         icon-remove(
           @click="remove"
         )
-      span.parts(
-        v-for="partOfText in listOfText[selectIndex].text.parts"
-        :class="{ highlight: partOfText.isMatched }"
-      ) {{ partOfText }}
+      .text-padding
+        span.parts(
+          v-for="partOfText in listOfText[selectIndex].text.parts"
+          :class="{ highlight: partOfText.isMatched }"
+        ) {{ partOfText }}
   .footer
     .left
       slot(name="footer")
@@ -397,7 +398,6 @@ export default defineComponent({
 .text {
   min-height: 1.75rem;
   margin-bottom: 0.5rem;
-  padding: 0.25rem 0.5rem;
   overflow: auto;
   font-size: 0.75rem;
   line-height: 1.5;
@@ -411,7 +411,7 @@ export default defineComponent({
     left: 0;
     z-index: 1;
     height: 0;
-    margin-right: -0.25rem;
+    margin-right: 0.125rem;
     text-align: right;
   }
   &:hover {
@@ -421,6 +421,10 @@ export default defineComponent({
         opacity: 0.9;
       }
     }
+  }
+  .text-padding {
+    padding: 0.25rem 0.5rem;
+    width: fit-content;
   }
 }
 .cursor-resize {

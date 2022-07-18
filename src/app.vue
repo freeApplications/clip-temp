@@ -178,12 +178,6 @@ body {
   height: calc(100% - 1.5rem);
   padding: 0.5rem;
 }
-input[type='text'],
-textarea {
-  padding: 0.25rem 0.5rem;
-  border: 1px solid;
-  font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
-}
 .footer {
   display: flex;
   justify-content: space-between;
@@ -246,12 +240,6 @@ textarea {
       }
     }
   }
-  input[type='text'],
-  textarea {
-    border-color: $light-border;
-    background-color: $light-background-main;
-    color: $light-font;
-  }
   .footer {
     button {
       border-color: $light-border;
@@ -299,12 +287,6 @@ textarea {
         color: $dark-font;
       }
     }
-  }
-  input[type='text'],
-  textarea {
-    border-color: $dark-border;
-    background-color: $dark-background-main;
-    color: $dark-font;
   }
   .footer {
     button {
