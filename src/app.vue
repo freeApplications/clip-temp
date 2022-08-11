@@ -106,24 +106,11 @@ export default defineComponent({
 
 <style lang="scss">
 @import 'assets/css/colors';
+@import 'assets/css/scrollbar';
 
 * {
   box-sizing: border-box;
   outline: none;
-  &::-webkit-scrollbar {
-    width: 1rem;
-    height: 1rem;
-  }
-  &::-webkit-scrollbar-track {
-    margin: -1px;
-    border-top: 1px solid;
-    border-left: 1px solid;
-  }
-  &::-webkit-scrollbar-corner {
-    margin: -2px;
-    border-top: 1px solid;
-    border-left: 1px solid;
-  }
 }
 body {
   height: 100vh;
@@ -207,21 +194,6 @@ body {
 }
 
 @media (prefers-color-scheme: light) {
-  * {
-    &::-webkit-scrollbar-track {
-      border-top-color: $light-border;
-      border-left-color: $light-border;
-      background-color: $light-scrollbar-track;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: $light-scrollbar;
-    }
-    &::-webkit-scrollbar-corner {
-      border-top-color: $light-border;
-      border-left-color: $light-border;
-      background-color: $light-scrollbar-track;
-    }
-  }
   #app {
     background-color: $light-background;
     color: $light-font;
@@ -255,21 +227,6 @@ body {
   }
 }
 @media (prefers-color-scheme: dark) {
-  * {
-    &::-webkit-scrollbar-track {
-      border-top-color: $dark-border;
-      border-left-color: $dark-border;
-      background-color: $dark-scrollbar-track;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: $dark-scrollbar;
-    }
-    &::-webkit-scrollbar-corner {
-      border-top-color: $dark-border;
-      border-left-color: $dark-border;
-      background-color: $dark-scrollbar-track;
-    }
-  }
   #app {
     background-color: $dark-background;
     color: $dark-font;

@@ -2,29 +2,20 @@
 #contents(
   @click.right="showCloseMenu"
 )
-  .list
+  .list(v-if="firstInFirstOut.length > 0")
     template(
-      v-for="(text, index) in firstInFirstOut"
+      v-for="text in firstInFirstOut"
     )
-      .text(v-if="index < MAX_COUNT")
+      .text
         span.new-line(
           v-for='textPerLine in text.split(/\\r?\\n/)'
         ) {{ textPerLine }}
-  .text(v-if="count === 0")
+  .text(v-else)
     | no items...
-  .text(v-if="moreCount > 0")
-    | ... {{ moreCount }} more item{{ moreCount > 1 ? 's' : '' }} (total {{ count }} items)
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  nextTick,
-  reactive,
-  toRefs,
-  computed,
-  onMounted,
-} from 'vue';
+import { defineComponent, nextTick, reactive, toRefs, onMounted } from 'vue';
 
 type State = {
   firstInFirstOut: string[];
@@ -38,15 +29,10 @@ export default defineComponent({
     });
 
     // data
-    const MAX_COUNT = 5;
     const state = reactive<State>({
       firstInFirstOut: [],
     });
     const { firstInFirstOut } = toRefs(state);
-
-    // computed
-    const count = computed(() => state.firstInFirstOut.length);
-    const moreCount = computed(() => count.value - MAX_COUNT);
 
     // methods
     const { showCloseMenu, resizeSubWindow } = window.api;
@@ -71,11 +57,7 @@ export default defineComponent({
 
     return {
       // date
-      MAX_COUNT,
       firstInFirstOut,
-      // computed
-      count,
-      moreCount,
       // methods
       showCloseMenu,
     };
@@ -85,7 +67,11 @@ export default defineComponent({
 
 <style lang="scss">
 @import '../assets/css/colors';
+@import '../assets/css/scrollbar';
 
+* {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
   overflow: hidden;
@@ -99,14 +85,20 @@ body {
   padding: 0.25rem;
   font-size: 0.75rem;
   .list {
+    max-height: calc(7.5rem - 4px);
+    overflow-y: auto;
+    border: 1px solid;
+    &::-webkit-scrollbar-track {
+      margin-bottom: 0;
+    }
     .text {
       min-height: 1rem;
+      padding: 0.25rem;
       overflow: hidden;
-      border: 1px solid;
       font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
       white-space: pre;
       &:not(:last-child) {
-        border-bottom: none;
+        border-bottom: 1px solid;
       }
       .new-line:not(:first-child) {
         position: relative;
@@ -123,7 +115,7 @@ body {
     }
   }
   .text {
-    padding: 0.25rem;
+    padding: calc(0.25rem + 1px);
   }
 }
 
@@ -131,11 +123,14 @@ body {
   #contents {
     background-color: $light-background;
     .list {
+      border-color: $light-border;
       .text {
-        border-color: $light-border;
         background-color: $light-background-main;
         &:first-child {
           background-color: $light-selected;
+        }
+        &:not(:last-child) {
+          border-color: $light-border;
         }
       }
     }
@@ -148,11 +143,14 @@ body {
   #contents {
     background-color: $dark-background;
     .list {
+      border-color: $dark-border;
       .text {
-        border-color: $dark-border;
         background-color: $dark-background-main;
         &:first-child {
           background-color: $dark-selected;
+        }
+        &:not(:last-child) {
+          border-color: $dark-border;
         }
       }
     }
