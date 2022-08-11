@@ -31,10 +31,10 @@ type State = {
 };
 export default defineComponent({
   setup() {
-    const { deliverFirstInFirstOut, resizeSubWindow } = window.api;
+    const { deliverFirstInFirstOut } = window.api;
     deliverFirstInFirstOut((firstInFirstOUt: string[]) => {
       state.firstInFirstOut = firstInFirstOUt;
-      nextTick(() => resizeSubWindow(document.body.scrollHeight));
+      nextTick(resize);
     });
 
     // data
@@ -49,7 +49,12 @@ export default defineComponent({
     const moreCount = computed(() => count.value - MAX_COUNT);
 
     // methods
-    const { showCloseMenu } = window.api;
+    const { showCloseMenu, resizeSubWindow } = window.api;
+    const resize = () => {
+      resizeSubWindow(
+        Math.floor(document.body.scrollHeight * window.devicePixelRatio)
+      );
+    };
 
     // lifecycle
     const { toggleFirstInFirstOutRepeat, closeSubWindow } = window.api;
@@ -61,7 +66,7 @@ export default defineComponent({
       });
       const close = document.body.querySelector('#close');
       close?.addEventListener('click', closeSubWindow);
-      resizeSubWindow(document.body.scrollHeight);
+      resize();
     });
 
     return {
