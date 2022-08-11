@@ -21,7 +21,7 @@ import {
   createEditMenu,
   createPasteModeMenu,
   changePasteMode,
-  createCloseMenu,
+  createFirstInFirstOutMenu,
 } from './menu-factory';
 import robot from 'robotjs';
 
@@ -193,6 +193,9 @@ ipcMain.on('close:main-window', (event, action?: () => void) => {
 ipcMain.on('show:sub-window', async () => {
   await createSubWindow();
 });
+ipcMain.on('show:first-in-first-out-menu', (event, index) => {
+  createFirstInFirstOutMenu(index).popup();
+});
 ipcMain.on('resize:sub-window', (event, height) => {
   if (!subWin || subWin.isDestroyed()) return;
   const { width, height: displayHeight } = screen.getPrimaryDisplay().workArea;
@@ -213,12 +216,14 @@ ipcMain.on('resize:sub-window', (event, height) => {
     subWin.showInactive();
   }
 });
+ipcMain.on('blur:sub-window', () => {
+  if (subWin && !subWin.isDestroyed()) {
+    subWin.blur();
+  }
+});
 ipcMain.on('close:sub-window', () => {
   if (subWin && !subWin.isDestroyed()) {
     subWin.close();
   }
   isMoved = false;
-});
-ipcMain.on('show:close-menu', () => {
-  createCloseMenu().popup();
 });

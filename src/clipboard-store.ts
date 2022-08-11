@@ -67,6 +67,22 @@ function insertFirstInFirstOut() {
     deliverFirstInFirstOut();
   }
 }
+export const firstInFirstOutOperator = {
+  paste: (): void => {
+    ipcMain.emit(`blur:sub-window`);
+    robot.keyTap('v', 'control');
+  },
+  move: (from: number, to: number): void => {
+    const [text] = firstInFirstOut.splice(from, 1);
+    firstInFirstOut.splice(to, 0, text);
+    deliverFirstInFirstOut();
+  },
+  remove: (index: number): void => {
+    firstInFirstOut.splice(index, 1);
+    deliverFirstInFirstOut();
+  },
+  isLast: (index: number): boolean => index === firstInFirstOut.length - 1,
+};
 
 function deliverFirstInFirstOut() {
   const window = BrowserWindow.getAllWindows().find((window) =>

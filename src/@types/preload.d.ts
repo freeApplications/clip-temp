@@ -31,9 +31,9 @@ declare global {
       storeWindowEvent: (
         action: (type: WindowEventType, ...args: unknown[]) => void
       ) => void;
+      showFirstInFirstOutMenu: (index: number) => void;
       resizeSubWindow: (height: number) => void;
       closeSubWindow: () => void;
-      showCloseMenu: () => void;
     };
   }
 }

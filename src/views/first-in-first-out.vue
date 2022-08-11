@@ -1,12 +1,12 @@
 <template lang="pug">
-#contents(
-  @click.right="showCloseMenu"
-)
+#contents
   .list(v-if="firstInFirstOut.length > 0")
     template(
-      v-for="text in firstInFirstOut"
+      v-for="(text, index) in firstInFirstOut"
     )
-      .text
+      .text(
+        @click.right="showFirstInFirstOutMenu(index)"
+      )
         span.new-line(
           v-for='textPerLine in text.split(/\\r?\\n/)'
         ) {{ textPerLine }}
@@ -35,7 +35,7 @@ export default defineComponent({
     const { firstInFirstOut } = toRefs(state);
 
     // methods
-    const { showCloseMenu, resizeSubWindow } = window.api;
+    const { showFirstInFirstOutMenu, resizeSubWindow } = window.api;
     const resize = () => {
       resizeSubWindow(
         Math.floor(document.body.scrollHeight * window.devicePixelRatio)
@@ -59,7 +59,7 @@ export default defineComponent({
       // date
       firstInFirstOut,
       // methods
-      showCloseMenu,
+      showFirstInFirstOutMenu,
     };
   },
 });

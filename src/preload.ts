@@ -67,13 +67,13 @@ contextBridge.exposeInMainWorld('api', {
       action(type, ...args)
     );
   },
+  showFirstInFirstOutMenu: (index: number) => {
+    ipcRenderer.send('show:first-in-first-out-menu', index);
+  },
   resizeSubWindow: (height: number) => {
     ipcRenderer.send('resize:sub-window', height);
   },
   closeSubWindow: () => {
     ipcRenderer.send('close:sub-window');
-  },
-  showCloseMenu: () => {
-    ipcRenderer.send('show:close-menu');
   },
 });

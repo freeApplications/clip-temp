@@ -8,7 +8,7 @@ import {
 } from 'electron';
 import path from 'path';
 import { EditActions, PasteMode } from '~/@types';
-import { isPasteMode } from './clipboard-store';
+import { isPasteMode, firstInFirstOutOperator } from './clipboard-store';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -229,6 +229,32 @@ export const createPasteModeMenu = (): Menu => {
   return Menu.buildFromTemplate(createPasteModeMenuTemplate());
 };
 
-export const createCloseMenu = (): Menu => {
-  return Menu.buildFromTemplate([{ label: 'Exit', role: 'close' }]);
+export const createFirstInFirstOutMenu = (index: number): Menu => {
+  const { paste, move, remove, isLast } = firstInFirstOutOperator;
+  return Menu.buildFromTemplate([
+    {
+      label: 'Paste to delete',
+      click: paste,
+      visible: index === 0,
+    },
+    {
+      label: 'Delete',
+      click: () => remove(index),
+    },
+    {
+      label: 'Move to first',
+      click: () => move(index, 0),
+      visible: index > 0,
+    },
+    {
+      label: 'Up',
+      click: () => move(index, index - 1),
+      visible: index > 0,
+    },
+    {
+      label: 'Down',
+      click: () => move(index, index + 1),
+      visible: !isLast(index),
+    },
+  ]);
 };
