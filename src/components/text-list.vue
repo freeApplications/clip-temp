@@ -371,13 +371,14 @@ export default defineComponent({
     .parts {
       &.new-line {
         position: relative;
-        padding-left: 1.25rem;
+        padding-left: 1.125rem;
         &::before {
+          opacity: 0.5;
           position: absolute;
           top: 50%;
           left: 0;
-          transform: translateY(-50%);
-          font-size: 1.25rem;
+          transform: translateY(-45%);
+          font-size: 1.125rem;
           content: '⮠';
         }
       }

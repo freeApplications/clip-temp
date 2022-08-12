@@ -115,7 +115,7 @@ export default defineComponent({
 body {
   height: 100vh;
   margin: 0;
-  overflow-y: hidden;
+  overflow: hidden;
 }
 #app {
   height: 100%;
@@ -165,30 +165,21 @@ body {
   height: calc(100% - 1.5rem);
   padding: 0.5rem;
 }
-.footer {
+.footer,
+.footer > div {
   display: flex;
-  justify-content: space-between;
-  .left {
-    transform: scale(1.5, 1);
-    transform-origin: top left;
-  }
-  .right {
-    transform: scale(1.5, 1);
-    transform-origin: top right;
-  }
+  justify-content: center;
+  column-gap: 1rem;
   button {
-    padding: 0.125rem 1rem;
+    padding: 0 1rem;
     border: 1px solid;
     border-radius: 4px;
     font-weight: bold;
-    font-size: 0.75rem;
+    font-size: 1rem;
+    font-family: 'Lucida Sans Unicode', Verdana, Roboto, sans-serif;
     cursor: pointer;
     &:disabled {
-      opacity: 0.5;
       cursor: default;
-    }
-    &:not(:last-child) {
-      margin-right: 0.333rem;
     }
   }
 }
@@ -202,26 +193,42 @@ body {
     border-bottom-color: $light-border;
     background-color: $light-background-main;
     .tab-list .tab-item a {
-      color: $light-inactive-link;
+      color: $light-font-inactive;
       &.router-link-active,
       &:hover {
         border-color: $light-border;
         border-bottom-color: $light-background;
         background-color: $light-background;
+      }
+      &:hover {
+        color: $light-font-hover;
+      }
+      &.router-link-active {
         color: $light-font;
       }
     }
   }
-  .footer {
+  .footer,
+  .footer > div {
     button {
       border-color: $light-border;
+      box-shadow: 3px 3px 6px #10204080, -2px -2px 4px #c0e0ff3f;
       background-color: $light-button;
-      color: $light-font;
+      color: $light-font-inactive;
+      &:disabled {
+        opacity: 0.5;
+        color: $light-font;
+      }
       &:not(:disabled):hover {
+        border-color: $light-button-border;
         background-color: $light-button-hover;
+        color: $light-font;
+        text-shadow: 0 0 0.25rem $light-button-blur;
       }
       &.danger:not(:disabled):hover {
+        border-color: $light-danger-button-border;
         background-color: $light-danger-button-hover;
+        text-shadow: 0 0 0.25rem $light-danger-button-blur;
       }
     }
   }
@@ -235,26 +242,42 @@ body {
     border-bottom-color: $dark-border;
     background-color: $dark-background-main;
     .tab-list .tab-item a {
-      color: $dark-inactive-link;
+      color: $dark-font-inactive;
       &.router-link-active,
       &:hover {
         border-color: $dark-border;
         border-bottom-color: $dark-background;
         background-color: $dark-background;
+      }
+      &:hover {
+        color: $dark-font-hover;
+      }
+      &.router-link-active {
         color: $dark-font;
       }
     }
   }
-  .footer {
+  .footer,
+  .footer > div {
     button {
       border-color: $dark-border;
+      box-shadow: 3px 3px 6px #08102080, -2px -2px 4px #20283040;
       background-color: $dark-button;
-      color: $dark-font;
+      color: $dark-font-inactive;
+      &:disabled {
+        opacity: 0.3;
+        color: $dark-font;
+      }
       &:not(:disabled):hover {
+        border-color: $dark-button-border;
         background-color: $dark-button-hover;
+        color: $dark-font;
+        text-shadow: 0 0 0.75rem $dark-button-blur;
       }
       &.danger:not(:disabled):hover {
+        border-color: $dark-danger-button-border;
         background-color: $dark-danger-button-hover;
+        text-shadow: 0 0 0.75rem $dark-danger-button-blur;
       }
     }
   }

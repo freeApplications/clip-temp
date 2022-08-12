@@ -15,14 +15,12 @@
         @input="fitContent"
       )
   .footer
-    .left
-      button(@click="save") Save
-      button.danger(
-        v-if="isEdit"
-        @click="remove"
-      ) Delete
-    .right
-      button.danger(@click="goIndex") Cancel
+    button.danger(
+      v-if="isEdit"
+      @click="remove"
+    ) Delete
+    button.danger(@click="goIndex") Cancel
+    button(@click="save") Save
 </template>
 
 <script lang="ts">
@@ -150,7 +148,7 @@ export default defineComponent({
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
   grid-gap: 0.5rem 1rem;
-  height: 90%;
+  height: calc(100% - 3rem);
   margin-bottom: 0.5rem;
   text-align: left;
   .text-wide {

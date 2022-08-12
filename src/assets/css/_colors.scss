@@ -4,7 +4,8 @@ $highlight-font: #2c3e50;
   Light theme colors
 *********************/
 $light-font: #2c3e50;
-$light-inactive-link: dimgray;
+$light-font-inactive: #687a8c;
+$light-font-hover: #4a5c6e;
 $light-highlight: gold;
 $light-selected: skyblue;
 $light-background: whitesmoke;
@@ -12,16 +13,21 @@ $light-background-main: white;
 $light-background-empty: lightgray;
 $light-border: lightgray;
 $light-button: #e4e4e4;
-$light-button-hover: lightgreen;
-$light-danger-button-hover: #ff7369;
+$light-button-hover: mediumseagreen;
+$light-button-blur: palegreen;
+$light-button-border: green;
+$light-danger-button-hover: tomato;
+$light-danger-button-blur: lightsalmon;
+$light-danger-button-border: firebrick;
 $light-scrollbar: lightsteelblue;
 $light-scrollbar-track: aliceblue;
 
 /*********************
   Dark theme colors
 *********************/
-$dark-font: #f1f8ff;
-$dark-inactive-link: gray;
+$dark-font: #ebf5ff;
+$dark-font-inactive: #afb9c3;
+$dark-font-hover: #cdd7e1;
 $dark-highlight: #debc58;
 $dark-selected: #354f85;
 $dark-background: #3b3b3b;
@@ -29,7 +35,11 @@ $dark-background-main: #292a2d;
 $dark-background-empty: #303030;
 $dark-border: #4c4c4c;
 $dark-button: #5d5d5d;
-$dark-button-hover: #55932f;
-$dark-danger-button-hover: firebrick;
+$dark-button-hover: seagreen;
+$dark-button-blur: darkslategray;
+$dark-button-border: darkcyan;
+$dark-danger-button-hover: tomato;
+$dark-danger-button-blur: darkred;
+$dark-danger-button-border: firebrick;
 $dark-scrollbar: #404850;
 $dark-scrollbar-track: #2d3237;

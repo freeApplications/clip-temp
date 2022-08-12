@@ -8,6 +8,10 @@ text-list(
   @remove="remove"
 )
   template(v-slot:footer)
+    button.danger(
+      @click="remove"
+      :disabled="!isEditable"
+    ) Delete
     button(
       @click="add"
     ) Add
@@ -15,10 +19,6 @@ text-list(
       @click="edit"
       :disabled="!isEditable"
     ) Edit
-    button.danger(
-      @click="remove"
-      :disabled="!isEditable"
-    ) Delete
 </template>
 
 <script lang="ts">
