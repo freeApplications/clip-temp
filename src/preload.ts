@@ -47,6 +47,10 @@ contextBridge.exposeInMainWorld('api', {
   removeTemplate: (index: number) => {
     ipcRenderer.send('remove:template', index);
   },
+  // settings
+  closeSettings: () => {
+    ipcRenderer.send('close:settings');
+  },
   // window
   showEditMenu: (editable: EditActions[]) => {
     ipcRenderer.send('show:edit-menu', editable);

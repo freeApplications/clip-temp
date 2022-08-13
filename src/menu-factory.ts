@@ -17,6 +17,11 @@ const createMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
     label: 'File',
     submenu: [
       {
+        label: 'Settings',
+        accelerator: 'CommandOrControl+Alt+S',
+        click: () => ipcMain.emit('show:settings'),
+      },
+      {
         label: 'Exit',
         role: 'quit',
       },
@@ -216,6 +221,16 @@ export const createAppMenu = (sender: WebContents): Menu => {
       : path.join(__dirname, 'icon.png'),
   });
   return Menu.buildFromTemplate(createMenuTemplate(sender));
+};
+
+export const createEmptyMenu = (): Menu => {
+  return Menu.buildFromTemplate([
+    { label: 'File' },
+    { label: 'Edit' },
+    { label: 'View' },
+    { label: 'Window' },
+    { label: 'Help' },
+  ]);
 };
 
 export const createEditMenu = (

@@ -1,5 +1,5 @@
 <template lang="pug">
-#nav
+#nav(v-show="!showSettings")
   ul.tab-list(ref="tabList")
     li.tab-item
       router-link(to="/") clipboard
@@ -7,16 +7,19 @@
       router-link(
         :to="isTemplateEdit ? route.path : '/template'"
       ) template
-router-view.tab-contents(
-  v-if="!isReloading"
+router-view.contents(
+  v-if="!isReloading || showSettings"
+  v-show="!showSettings"
+)
+settings(
+  v-if="!isReloading && showSettings"
+  @close="closeSettings"
 )
 </template>
 
 <script lang="ts">
 import {
   defineComponent,
-  reactive,
-  toRefs,
   ref,
   computed,
   watch,
@@ -26,17 +29,20 @@ import {
 } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { HANDLING_KEYS } from '~/renderer-constants';
+import Settings from '~/views/settings.vue';
 import store from '~/store';
 
 export default defineComponent({
+  components: {
+    Settings,
+  },
   setup() {
     const route = useRoute();
+    const router = useRouter();
 
     // data
-    const state = reactive({
-      isReloading: false,
-    });
-    const { isReloading } = toRefs(state);
+    const isReloading = ref(false);
+    const showSettings = ref(false);
 
     // refs
     const tabList = ref<HTMLUListElement>();
@@ -48,14 +54,25 @@ export default defineComponent({
     watch(
       () => store.state.windowEvent,
       (windowEvent) => {
-        if (!isTemplateEdit.value && windowEvent?.type === 'reload') {
-          state.isReloading = true;
-          nextTick(() => (state.isReloading = false));
+        if (!windowEvent) return;
+        switch (windowEvent.type) {
+          case 'reload':
+            if (isTemplateEdit.value) return;
+            isReloading.value = true;
+            nextTick(() => (isReloading.value = false));
+            break;
+          case 'settings':
+            showSettings.value = true;
+            break;
         }
       }
     );
 
     // methods
+    const closeSettings = () => {
+      window.api.closeSettings();
+      showSettings.value = false;
+    };
     const changeTab = (isNext: boolean) => {
       if (!tabList.value) return;
       const tabLinks: HTMLLinkElement[] = Array.from(
@@ -71,6 +88,15 @@ export default defineComponent({
       tabLinks[tabIndex].click();
     };
     const onKeyDown = (keyEvent: KeyboardEvent) => {
+      if (showSettings.value) {
+        if (
+          keyEvent.key === HANDLING_KEYS.ESCAPE ||
+          keyEvent.key === HANDLING_KEYS.ENTER
+        ) {
+          closeSettings();
+        }
+        return;
+      }
       if (
         !keyEvent.altKey &&
         keyEvent.ctrlKey &&
@@ -84,7 +110,7 @@ export default defineComponent({
 
     // lifecycle
     onMounted(() => {
-      useRouter().push('/');
+      router.push('/');
       document.addEventListener('keydown', onKeyDown);
     });
     onBeforeUnmount(() => {
@@ -94,11 +120,14 @@ export default defineComponent({
     return {
       // data
       isReloading,
+      showSettings,
       route,
       // refs
       tabList,
       // computed
       isTemplateEdit,
+      // methods
+      closeSettings,
     };
   },
 });
@@ -122,48 +151,6 @@ body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-}
-#nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 1.5rem;
-  margin: 0;
-  border-bottom: 1px solid;
-  .tab-list {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    height: 100%;
-    margin: 0 0 -2px;
-    padding: 0 0.5rem;
-    list-style: none;
-    .tab-item {
-      width: 100%;
-      height: 100%;
-      padding: 0 0.25rem;
-      a {
-        display: inline-block;
-        width: 100%;
-        height: 100%;
-        padding: 3px;
-        font-weight: bold;
-        text-decoration: none;
-        &.router-link-active,
-        &:hover {
-          padding: 2px;
-          margin-bottom: 2px;
-          border: 1px solid;
-          border-radius: 0.5rem 0.5rem 0 0;
-        }
-      }
-    }
-  }
-}
-.tab-contents {
-  height: calc(100% - 1.5rem);
-  padding: 0.5rem;
 }
 .footer,
 .footer > div {
@@ -188,25 +175,6 @@ body {
   #app {
     background-color: $light-background;
     color: $light-font;
-  }
-  #nav {
-    border-bottom-color: $light-border;
-    background-color: $light-background-main;
-    .tab-list .tab-item a {
-      color: $light-font-inactive;
-      &.router-link-active,
-      &:hover {
-        border-color: $light-border;
-        border-bottom-color: $light-background;
-        background-color: $light-background;
-      }
-      &:hover {
-        color: $light-font-hover;
-      }
-      &.router-link-active {
-        color: $light-font;
-      }
-    }
   }
   .footer,
   .footer > div {
@@ -238,25 +206,6 @@ body {
     background-color: $dark-background;
     color: $dark-font;
   }
-  #nav {
-    border-bottom-color: $dark-border;
-    background-color: $dark-background-main;
-    .tab-list .tab-item a {
-      color: $dark-font-inactive;
-      &.router-link-active,
-      &:hover {
-        border-color: $dark-border;
-        border-bottom-color: $dark-background;
-        background-color: $dark-background;
-      }
-      &:hover {
-        color: $dark-font-hover;
-      }
-      &.router-link-active {
-        color: $dark-font;
-      }
-    }
-  }
   .footer,
   .footer > div {
     button {
@@ -278,6 +227,96 @@ body {
         border-color: $dark-danger-button-border;
         background-color: $dark-danger-button-hover;
         text-shadow: 0 0 0.75rem $dark-danger-button-blur;
+      }
+    }
+  }
+}
+</style>
+
+<style scoped lang="scss">
+@import 'assets/css/colors';
+
+#nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1.5rem;
+  margin: 0;
+  border-bottom: 1px solid;
+  .tab-list {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    margin: 0 0 -2px;
+    padding: 0 0.5rem;
+    list-style: none;
+    .tab-item {
+      width: 100%;
+      height: 100%;
+      padding: 0 0.25rem;
+      text-align: center;
+      a {
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        padding: 3px;
+        font-weight: bold;
+        text-decoration: none;
+        &.router-link-active,
+        &:hover {
+          padding: 2px;
+          margin-bottom: 2px;
+          border: 1px solid;
+          border-radius: 0.5rem 0.5rem 0 0;
+        }
+      }
+    }
+  }
+}
+.contents {
+  height: calc(100% - 1.5rem);
+  padding: 0.5rem;
+}
+
+@media (prefers-color-scheme: light) {
+  #nav {
+    border-bottom-color: $light-border;
+    background-color: $light-background-main;
+    .tab-list .tab-item a {
+      color: $light-font-inactive;
+      &.router-link-active,
+      &:hover {
+        border-color: $light-border;
+        border-bottom-color: $light-background;
+        background-color: $light-background;
+      }
+      &:hover {
+        color: $light-font-hover;
+      }
+      &.router-link-active {
+        color: $light-font;
+      }
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  #nav {
+    border-bottom-color: $dark-border;
+    background-color: $dark-background-main;
+    .tab-list .tab-item a {
+      color: $dark-font-inactive;
+      &.router-link-active,
+      &:hover {
+        border-color: $dark-border;
+        border-bottom-color: $dark-background;
+        background-color: $dark-background;
+      }
+      &:hover {
+        color: $dark-font-hover;
+      }
+      &.router-link-active {
+        color: $dark-font;
       }
     }
   }

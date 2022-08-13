@@ -23,6 +23,8 @@ declare global {
       getTemplate: (index: number) => Promise;
       pasteTemplate: (index: number) => void;
       removeTemplate: (index: number) => void;
+      // settings
+      closeSettings: () => void;
       // window
       showEditMenu: (editable: EditActions[]) => void;
       changeEditable: (editable: EditActions[]) => void;

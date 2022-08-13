@@ -12,7 +12,7 @@ export type Template = {
 };
 
 export type EditActions = 'paste' | 'add' | 'edit' | 'remove';
-export type WindowEventType = 'reload' | EditActions;
+export type WindowEventType = 'reload' | 'settings' | EditActions;
 export type WindowEvent = {
   type: WindowEventType;
   args: unknown[];

@@ -18,6 +18,7 @@ import './clipboard-store';
 import './template-store';
 import {
   createAppMenu,
+  createEmptyMenu,
   createEditMenu,
   createPasteModeMenu,
   changePasteMode,
@@ -226,4 +227,13 @@ ipcMain.on('close:sub-window', () => {
     subWin.close();
   }
   isMoved = false;
+});
+ipcMain.on('show:settings', () => {
+  if (!mainWin || mainWin.isDestroyed()) return;
+  Menu.setApplicationMenu(createEmptyMenu());
+  mainWin.webContents.send('store:window-event', 'settings');
+});
+ipcMain.on('close:settings', () => {
+  if (!mainWin || mainWin.isDestroyed()) return;
+  Menu.setApplicationMenu(createAppMenu(mainWin.webContents));
 });
