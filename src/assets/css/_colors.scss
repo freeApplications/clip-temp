@@ -21,6 +21,11 @@ $light-danger-button-blur: lightsalmon;
 $light-danger-button-border: firebrick;
 $light-scrollbar: lightsteelblue;
 $light-scrollbar-track: aliceblue;
+$light-settings-item: paleturquoise;
+$light-settings-checked: mediumseagreen;
+$light-settings-hover: lightgreen;
+$light-settings-blur: palegreen;
+$light-settings-border: green;
 
 /*********************
   Dark theme colors
@@ -43,3 +48,8 @@ $dark-danger-button-blur: darkred;
 $dark-danger-button-border: firebrick;
 $dark-scrollbar: #404850;
 $dark-scrollbar-track: #2d3237;
+$dark-settings-item: #104060;
+$dark-settings-checked: seagreen;
+$dark-settings-hover: #17452b;
+$dark-settings-blur: darkslategray;
+$dark-settings-border: darkcyan;

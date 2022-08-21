@@ -1,5 +1,11 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { Clipboard, Template, WindowEventType, EditActions } from '~/@types';
+import {
+  Clipboard,
+  Template,
+  WindowEventType,
+  EditActions,
+  Settings,
+} from '~/@types';
 
 // Expose ipcRenderer to the client
 contextBridge.exposeInMainWorld('api', {
@@ -48,6 +54,14 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.send('remove:template', index);
   },
   // settings
+  getSettings: () => {
+    return ipcRenderer
+      .invoke('get:settings')
+      .then((settings: Settings.items) => settings);
+  },
+  changeTheme: (theme: Settings.theme) => {
+    ipcRenderer.send('change:theme', theme);
+  },
   closeSettings: () => {
     ipcRenderer.send('close:settings');
   },

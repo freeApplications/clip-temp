@@ -3,12 +3,12 @@ import {
   Menu,
   MenuItemConstructorOptions as MenuItemOptions,
   WebContents,
-  nativeTheme,
   ipcMain,
 } from 'electron';
 import path from 'path';
-import { EditActions, PasteMode } from '~/@types';
+import { EditActions, PasteMode, Settings } from '~/@types';
 import { isPasteMode, firstInFirstOutOperator } from './clipboard-store';
+import { getSettings, changeTheme } from './settings-store';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -73,6 +73,7 @@ const createMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
     label: 'Window',
     submenu: [
       {
+        id: 'theme',
         label: 'Theme',
         submenu: createThemeMenuTemplate(),
       },
@@ -174,41 +175,39 @@ ipcMain.on('change:editable', (event, editable: EditActions[]) => {
   });
 });
 
+const changeThemMenu = (theme: Settings.theme): void => {
+  changeTheme(theme);
+  const menu = Menu.getApplicationMenu();
+  if (menu === null) return;
+  const themeMenu = menu.getMenuItemById('theme');
+  if (themeMenu === null || themeMenu.submenu === undefined) return;
+  themeMenu.submenu.items.forEach(
+    (item) => (item.checked = item.label.toLowerCase() === theme)
+  );
+};
+
 const createThemeMenuTemplate = (): MenuItemOptions[] => {
-  const themeMenu = [
+  const { theme } = getSettings();
+  return [
     {
-      id: 'theme-system',
       label: 'System',
       type: 'checkbox' as const,
-      checked: nativeTheme.themeSource === 'system',
-      click: () => changeTheme('system'),
+      checked: theme === 'system',
+      click: () => changeThemMenu('system'),
     },
     {
-      id: 'theme-light',
       label: 'Light',
       type: 'checkbox' as const,
-      checked: nativeTheme.themeSource === 'light',
-      click: () => changeTheme('light'),
+      checked: theme === 'light',
+      click: () => changeThemMenu('light'),
     },
     {
-      id: 'theme-dark',
       label: 'Dark',
       type: 'checkbox' as const,
-      checked: nativeTheme.themeSource === 'dark',
-      click: () => changeTheme('dark'),
+      checked: theme === 'dark',
+      click: () => changeThemMenu('dark'),
     },
   ];
-  const changeTheme = (theme: 'system' | 'light' | 'dark') => {
-    nativeTheme.themeSource = theme;
-    const menu = Menu.getApplicationMenu();
-    if (menu === null) return;
-    for (const item of ['system', 'light', 'dark']) {
-      const menuItem = menu.getMenuItemById(`theme-${item}`);
-      if (menuItem === null) continue;
-      menuItem.checked = theme === item;
-    }
-  };
-  return themeMenu;
 };
 
 export const createAppMenu = (sender: WebContents): Menu => {
@@ -221,16 +220,6 @@ export const createAppMenu = (sender: WebContents): Menu => {
       : path.join(__dirname, 'icon.png'),
   });
   return Menu.buildFromTemplate(createMenuTemplate(sender));
-};
-
-export const createEmptyMenu = (): Menu => {
-  return Menu.buildFromTemplate([
-    { label: 'File' },
-    { label: 'Edit' },
-    { label: 'View' },
-    { label: 'Window' },
-    { label: 'Help' },
-  ]);
 };
 
 export const createEditMenu = (

@@ -16,9 +16,9 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 import path from 'path';
 import './clipboard-store';
 import './template-store';
+import './settings-store';
 import {
   createAppMenu,
-  createEmptyMenu,
   createEditMenu,
   createPasteModeMenu,
   changePasteMode,
@@ -230,10 +230,10 @@ ipcMain.on('close:sub-window', () => {
 });
 ipcMain.on('show:settings', () => {
   if (!mainWin || mainWin.isDestroyed()) return;
-  Menu.setApplicationMenu(createEmptyMenu());
+  mainWin.setMenuBarVisibility(false);
   mainWin.webContents.send('store:window-event', 'settings');
 });
 ipcMain.on('close:settings', () => {
   if (!mainWin || mainWin.isDestroyed()) return;
-  Menu.setApplicationMenu(createAppMenu(mainWin.webContents));
+  mainWin.setMenuBarVisibility(true);
 });

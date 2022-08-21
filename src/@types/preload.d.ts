@@ -1,4 +1,10 @@
-import { Clipboard, Template, WindowEventType, EditActions } from './';
+import {
+  Clipboard,
+  Template,
+  WindowEventType,
+  EditActions,
+  Settings,
+} from './';
 
 declare global {
   interface Window {
@@ -24,6 +30,8 @@ declare global {
       pasteTemplate: (index: number) => void;
       removeTemplate: (index: number) => void;
       // settings
+      getSettings: () => Promise;
+      changeTheme: (theme: Settings.Theme) => void;
       closeSettings: () => void;
       // window
       showEditMenu: (editable: EditActions[]) => void;

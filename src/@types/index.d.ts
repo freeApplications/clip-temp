@@ -1,10 +1,8 @@
 export type ClipTemp = Clipboard | Template;
-
 export type Clipboard = {
   time: number;
   text: string;
 };
-
 export type Template = {
   time: number;
   title: string;
@@ -19,3 +17,14 @@ export type WindowEvent = {
 };
 
 export type PasteMode = 'normal' | 'fifo';
+
+export namespace Settings {
+  export type theme = 'system' | 'light' | 'dark';
+  export type items = {
+    theme: theme;
+  };
+  export type option = {
+    text: string;
+    value: string;
+  };
+}
