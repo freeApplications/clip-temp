@@ -15,18 +15,26 @@
           :options="themeOptions"
           @update:modelValue="changeTheme"
         )
+      .item
+        | Run application on system startup
+        checkbox(
+          v-model="settings.startup"
+          @update:modelValue="changeStartup"
+        )
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import ArrowBack from '~/components/icons/arrow-back.vue';
 import RadioButton from '~/components/forms/radio-button.vue';
+import Checkbox from '~/components/forms/checkbox.vue';
 import { Settings } from '~/@types';
 
 export default defineComponent({
   components: {
     ArrowBack,
     RadioButton,
+    Checkbox,
   },
   setup(_, context) {
     // data
@@ -43,7 +51,7 @@ export default defineComponent({
     ];
 
     // methods
-    const { changeTheme } = window.api;
+    const { changeTheme, changeStartup } = window.api;
     const close = () => context.emit('close');
 
     return {
@@ -53,6 +61,7 @@ export default defineComponent({
       // methods
       close,
       changeTheme,
+      changeStartup,
     };
   },
 });
@@ -93,6 +102,9 @@ export default defineComponent({
         border: 1px solid;
         font-family: 'Lucida Sans Unicode', Verdana, Roboto, sans-serif;
         white-space: nowrap;
+        &:not(:last-child) {
+          margin-bottom: 1rem;
+        }
         &::before {
           position: absolute;
           top: 0;

@@ -26,6 +26,8 @@ $light-settings-checked: mediumseagreen;
 $light-settings-hover: lightgreen;
 $light-settings-blur: palegreen;
 $light-settings-border: green;
+$light-settings-danger-checked: tomato;
+$light-settings-danger-blur: lightsalmon;
 
 /*********************
   Dark theme colors
@@ -53,3 +55,5 @@ $dark-settings-checked: seagreen;
 $dark-settings-hover: #17452b;
 $dark-settings-blur: darkslategray;
 $dark-settings-border: darkcyan;
+$dark-settings-danger-checked: tomato;
+$dark-settings-danger-blur: darkred;

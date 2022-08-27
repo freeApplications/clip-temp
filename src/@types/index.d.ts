@@ -22,6 +22,7 @@ export namespace Settings {
   export type theme = 'system' | 'light' | 'dark';
   export type items = {
     theme: theme;
+    startup: boolean;
   };
   export type option = {
     text: string;

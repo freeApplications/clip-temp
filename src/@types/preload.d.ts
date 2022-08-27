@@ -32,6 +32,7 @@ declare global {
       // settings
       getSettings: () => Promise;
       changeTheme: (theme: Settings.Theme) => void;
+      changeStartup: (startup: boolean) => void;
       closeSettings: () => void;
       // window
       showEditMenu: (editable: EditActions[]) => void;

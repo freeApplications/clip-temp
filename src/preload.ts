@@ -62,6 +62,9 @@ contextBridge.exposeInMainWorld('api', {
   changeTheme: (theme: Settings.theme) => {
     ipcRenderer.send('change:theme', theme);
   },
+  changeStartup: (startup: boolean) => {
+    ipcRenderer.send('change:startup', startup);
+  },
   closeSettings: () => {
     ipcRenderer.send('close:settings');
   },
