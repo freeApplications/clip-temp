@@ -8,6 +8,7 @@ import {
 } from 'electron';
 import clipboardListener from 'clipboard-event';
 import { Clipboard, PasteMode } from '~/@types';
+import { getSettings } from './settings-store';
 import robot from 'robotjs';
 
 let mode: PasteMode = 'normal';
@@ -36,14 +37,16 @@ function upsertHistory() {
     return;
   }
   insertFirstInFirstOut();
-  const same = histories.find((item) => item.text === current.text);
-  if (same) {
-    // When exist same item, update timestamp
-    same.time = current.time;
-    recent = same;
-  } else {
-    histories.push(current);
-    recent = current;
+  const index = histories.findIndex((item) => item.text === current.text);
+  if (index > -1) {
+    // When exist same item, remove from histories
+    histories.splice(index, 1);
+  }
+  histories.push(current);
+  recent = current;
+  const overflow = histories.length - getSettings().clipboard.maxsize;
+  if (overflow > 0) {
+    histories.splice(0, overflow);
   }
 }
 

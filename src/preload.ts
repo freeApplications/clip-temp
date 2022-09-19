@@ -65,6 +65,9 @@ contextBridge.exposeInMainWorld('api', {
   changeStartup: (startup: boolean) => {
     ipcRenderer.send('change:startup', startup);
   },
+  changeClipboardMaxsize: (maxsize: number) => {
+    ipcRenderer.send('change:clipboard-maxsize', maxsize);
+  },
   closeSettings: () => {
     ipcRenderer.send('close:settings');
   },

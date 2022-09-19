@@ -23,6 +23,9 @@ export namespace Settings {
   export type items = {
     theme: theme;
     startup: boolean;
+    clipboard: {
+      maxsize: number;
+    };
   };
   export type option = {
     text: string;

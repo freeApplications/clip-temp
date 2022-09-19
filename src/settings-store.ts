@@ -7,6 +7,9 @@ const store = new Store();
 const DEFAULT_SETTINGS: Settings.items = {
   theme: 'system',
   startup: false,
+  clipboard: {
+    maxsize: 100,
+  },
 };
 
 export const getSettings = (): Settings.items => {
@@ -27,6 +30,18 @@ const setSettings: setSettings = (
   const settings = getSettings();
   if (settings[key] !== value) {
     store.set(`settings.${key}`, value);
+  }
+};
+type setClipboardSettings = {
+  (key: 'maxsize', value: number): void;
+};
+const setClipboardSettings: setClipboardSettings = (
+  key: 'maxsize',
+  value: number
+) => {
+  const { clipboard } = getSettings();
+  if (clipboard[key] !== value) {
+    store.set(`settings.clipboard.${key}`, value);
   }
 };
 export const changeTheme = (theme: Settings.theme): void => {
@@ -51,4 +66,7 @@ ipcMain.on('change:theme', (event, theme: Settings.theme) => {
 });
 ipcMain.on('change:startup', (event, startup: boolean) => {
   changeStartup(startup);
+});
+ipcMain.on('change:clipboard-maxsize', (event, maxsize: number) => {
+  setClipboardSettings('maxsize', maxsize);
 });

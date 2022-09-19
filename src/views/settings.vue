@@ -21,6 +21,15 @@
           v-model="settings.startup"
           @update:modelValue="changeStartup"
         )
+      .item
+        | Clipboard history max size
+        range-slider(
+          v-model="settings.clipboard.maxsize"
+          @update:modelValue="changeClipboardMaxsize"
+          :min="100"
+          :max="1000"
+          :step="100"
+        )
 </template>
 
 <script lang="ts">
@@ -28,6 +37,7 @@ import { defineComponent, ref } from 'vue';
 import ArrowBack from '~/components/icons/arrow-back.vue';
 import RadioButton from '~/components/forms/radio-button.vue';
 import Checkbox from '~/components/forms/checkbox.vue';
+import RangeSlider from '~/components/forms/range-slider.vue';
 import { Settings } from '~/@types';
 
 export default defineComponent({
@@ -35,6 +45,7 @@ export default defineComponent({
     ArrowBack,
     RadioButton,
     Checkbox,
+    RangeSlider,
   },
   setup(_, context) {
     // data
@@ -51,7 +62,7 @@ export default defineComponent({
     ];
 
     // methods
-    const { changeTheme, changeStartup } = window.api;
+    const { changeTheme, changeStartup, changeClipboardMaxsize } = window.api;
     const close = () => context.emit('close');
 
     return {
@@ -62,6 +73,7 @@ export default defineComponent({
       close,
       changeTheme,
       changeStartup,
+      changeClipboardMaxsize,
     };
   },
 });
@@ -119,6 +131,14 @@ export default defineComponent({
   }
 }
 
+@media (max-width: 500px) {
+  #settings {
+    section .list .item {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
+}
 @media (prefers-color-scheme: light) {
   #settings {
     background-color: $light-background-main;

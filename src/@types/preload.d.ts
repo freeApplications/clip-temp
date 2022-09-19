@@ -33,6 +33,7 @@ declare global {
       getSettings: () => Promise;
       changeTheme: (theme: Settings.Theme) => void;
       changeStartup: (startup: boolean) => void;
+      changeClipboardMaxsize: (maxsize: number) => void;
       closeSettings: () => void;
       // window
       showEditMenu: (editable: EditActions[]) => void;
