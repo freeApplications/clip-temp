@@ -26,6 +26,12 @@ import {
 } from './menu-factory';
 import robot from 'robotjs';
 
+// Prevent multiple startup
+if (!app.requestSingleInstanceLock()) {
+  console.log('Quit because it has already running...!');
+  app.quit();
+}
+
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // Scheme must be registered before the app is ready

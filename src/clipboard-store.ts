@@ -124,6 +124,8 @@ app.whenReady().then(() => {
 });
 
 app.on('quit', () => {
+  // When multiple startup, nothing is done.
+  if (clipboardListener.child === null) return;
   clipboardListener.stopListening();
 });
 
