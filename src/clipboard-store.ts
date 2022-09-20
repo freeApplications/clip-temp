@@ -7,9 +7,12 @@ import {
   IpcMainEvent,
 } from 'electron';
 import clipboardListener from 'clipboard-event';
+import Store from 'electron-store';
 import { Clipboard, PasteMode } from '~/@types';
 import { getSettings } from './settings-store';
 import robot from 'robotjs';
+
+const store = new Store();
 
 let mode: PasteMode = 'normal';
 export const isPasteMode = (modeOfArgs: PasteMode): boolean => {
@@ -124,12 +127,24 @@ function takeoverPasteShortcut() {
 app.whenReady().then(() => {
   clipboardListener.startListening();
   clipboardListener.on('change', upsertHistory);
+  if (getSettings().clipboard.backup) {
+    const restoreHistories = store.get('clipboard', []) as Clipboard[];
+    histories.splice(0, 0, ...restoreHistories);
+  }
 });
 
+export const backup = (): void => {
+  if (getSettings().clipboard.backup) {
+    store.set('clipboard', histories);
+  } else {
+    store.delete('clipboard');
+  }
+};
 app.on('quit', () => {
   // When multiple startup, nothing is done.
   if (clipboardListener.child === null) return;
   clipboardListener.stopListening();
+  backup();
 });
 
 ipcMain.on('order:clipboard', (event) => {

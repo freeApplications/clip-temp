@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS: Settings.items = {
   startup: false,
   clipboard: {
     maxsize: 100,
+    backup: false,
   },
 };
 
@@ -17,6 +18,10 @@ export const getSettings = (): Settings.items => {
   return {
     ...DEFAULT_SETTINGS,
     ...settings,
+    clipboard: {
+      ...DEFAULT_SETTINGS.clipboard,
+      ...settings.clipboard,
+    },
   };
 };
 type setSettings = {
@@ -34,10 +39,11 @@ const setSettings: setSettings = (
 };
 type setClipboardSettings = {
   (key: 'maxsize', value: number): void;
+  (key: 'backup', value: boolean): void;
 };
 const setClipboardSettings: setClipboardSettings = (
-  key: 'maxsize',
-  value: number
+  key: 'maxsize' | 'backup',
+  value: number | boolean
 ) => {
   const { clipboard } = getSettings();
   if (clipboard[key] !== value) {
@@ -69,4 +75,7 @@ ipcMain.on('change:startup', (event, startup: boolean) => {
 });
 ipcMain.on('change:clipboard-maxsize', (event, maxsize: number) => {
   setClipboardSettings('maxsize', maxsize);
+});
+ipcMain.on('change:clipboard-backup', (event, backup: boolean) => {
+  setClipboardSettings('backup', backup);
 });

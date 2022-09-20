@@ -68,6 +68,9 @@ contextBridge.exposeInMainWorld('api', {
   changeClipboardMaxsize: (maxsize: number) => {
     ipcRenderer.send('change:clipboard-maxsize', maxsize);
   },
+  changeClipboardBackup: (backup: number) => {
+    ipcRenderer.send('change:clipboard-backup', backup);
+  },
   closeSettings: () => {
     ipcRenderer.send('close:settings');
   },

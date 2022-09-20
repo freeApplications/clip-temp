@@ -25,6 +25,7 @@ export namespace Settings {
     startup: boolean;
     clipboard: {
       maxsize: number;
+      backup: boolean;
     };
   };
   export type option = {

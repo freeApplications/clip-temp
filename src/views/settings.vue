@@ -4,7 +4,7 @@
     arrow-back(
       @click="close"
     )
-  section
+  main
     h1 Settings
     .list(v-if="Object.keys(settings).length")
       .item
@@ -21,15 +21,23 @@
           v-model="settings.startup"
           @update:modelValue="changeStartup"
         )
-      .item
-        | Clipboard history max size
-        range-slider(
-          v-model="settings.clipboard.maxsize"
-          @update:modelValue="changeClipboardMaxsize"
-          :min="100"
-          :max="1000"
-          :step="100"
-        )
+      section
+        h2 Clipboard history
+        .item
+          | Max size
+          range-slider(
+            v-model="settings.clipboard.maxsize"
+            @update:modelValue="changeClipboardMaxsize"
+            :min="100"
+            :max="1000"
+            :step="100"
+          )
+        .item
+          | Backup and restore
+          checkbox(
+            v-model="settings.clipboard.backup"
+            @update:modelValue="changeClipboardBackup"
+          )
 </template>
 
 <script lang="ts">
@@ -62,7 +70,12 @@ export default defineComponent({
     ];
 
     // methods
-    const { changeTheme, changeStartup, changeClipboardMaxsize } = window.api;
+    const {
+      changeTheme,
+      changeStartup,
+      changeClipboardMaxsize,
+      changeClipboardBackup,
+    } = window.api;
     const close = () => context.emit('close');
 
     return {
@@ -74,6 +87,7 @@ export default defineComponent({
       changeTheme,
       changeStartup,
       changeClipboardMaxsize,
+      changeClipboardBackup,
     };
   },
 });
@@ -92,7 +106,7 @@ export default defineComponent({
     top: 0.5rem;
     left: 0.5rem;
   }
-  section {
+  main {
     min-width: fit-content;
     padding: 0.5rem 1rem;
     h1 {
@@ -101,6 +115,12 @@ export default defineComponent({
       border-bottom: 2.5px solid;
       font-size: 1.25rem;
       text-align: center;
+    }
+    h2 {
+      margin: 0 0 1rem 0;
+      padding: 0 0 0.25rem 0.25rem;
+      border-bottom: 2px solid;
+      font-size: 1.125rem;
     }
     .list {
       padding: 1rem 0.5rem;
@@ -127,13 +147,18 @@ export default defineComponent({
           content: '';
         }
       }
+      section {
+        .item {
+          margin-left: 1rem;
+        }
+      }
     }
   }
 }
 
 @media (max-width: 500px) {
   #settings {
-    section .list .item {
+    main .list .item {
       justify-content: center;
       flex-wrap: wrap;
     }
@@ -143,8 +168,9 @@ export default defineComponent({
   #settings {
     background-color: $light-background-main;
     color: $light-font;
-    section {
-      h1 {
+    main {
+      h1,
+      h2 {
         border-bottom-color: $light-border;
       }
       .list {
@@ -164,8 +190,9 @@ export default defineComponent({
   #settings {
     background-color: $dark-background-main;
     color: $dark-font;
-    section {
-      h1 {
+    main {
+      h1,
+      h2 {
         border-bottom-color: $dark-border;
       }
       .list {

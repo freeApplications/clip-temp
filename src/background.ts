@@ -14,7 +14,7 @@ import {
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 import path from 'path';
-import './clipboard-store';
+import { backup } from './clipboard-store';
 import './template-store';
 import './settings-store';
 import {
@@ -58,6 +58,7 @@ async function createMainWindow() {
     await mainWin.loadURL('app://./index.html');
   }
   mainWin.on('close', withoutCloseToHide);
+  mainWin.on('session-end', backup);
 }
 
 function withoutCloseToHide(event: Event) {
