@@ -38,6 +38,14 @@
             v-model="settings.clipboard.backup"
             @update:modelValue="changeClipboardBackup"
           )
+      section
+        h2 First-In First-Out
+        .item
+          | Keep items after changing to normal mode
+          checkbox(
+            v-model="settings.firstInFirstOut.keepItems"
+            @update:modelValue="changeFirstInFirstOutKeepItems"
+          )
 </template>
 
 <script lang="ts">
@@ -75,6 +83,7 @@ export default defineComponent({
       changeStartup,
       changeClipboardMaxsize,
       changeClipboardBackup,
+      changeFirstInFirstOutKeepItems,
     } = window.api;
     const close = () => context.emit('close');
 
@@ -88,6 +97,7 @@ export default defineComponent({
       changeStartup,
       changeClipboardMaxsize,
       changeClipboardBackup,
+      changeFirstInFirstOutKeepItems,
     };
   },
 });
@@ -150,6 +160,9 @@ export default defineComponent({
       section {
         .item {
           margin-left: 1rem;
+        }
+        &:not(:last-child) {
+          margin-bottom: 1rem;
         }
       }
     }

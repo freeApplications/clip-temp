@@ -27,6 +27,9 @@ export namespace Settings {
       maxsize: number;
       backup: boolean;
     };
+    firstInFirstOut: {
+      keepItems: boolean;
+    };
   };
   export type option = {
     text: string;

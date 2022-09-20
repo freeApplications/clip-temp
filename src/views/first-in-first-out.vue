@@ -22,11 +22,13 @@ type State = {
 };
 export default defineComponent({
   setup() {
-    const { deliverFirstInFirstOut } = window.api;
-    deliverFirstInFirstOut((firstInFirstOUt: string[]) => {
+    const bindState = (firstInFirstOUt: string[]) => {
       state.firstInFirstOut = firstInFirstOUt;
       nextTick(resize);
-    });
+    };
+    const { deliverFirstInFirstOut, getFirstInFirstOut } = window.api;
+    deliverFirstInFirstOut(bindState);
+    getFirstInFirstOut().then(bindState);
 
     // data
     const state = reactive<State>({
@@ -43,9 +45,18 @@ export default defineComponent({
     };
 
     // lifecycle
-    const { toggleFirstInFirstOutRepeat, closeSubWindow } = window.api;
+    const {
+      getFirstInFirstOutRepeat,
+      toggleFirstInFirstOutRepeat,
+      closeSubWindow,
+    } = window.api;
     onMounted(() => {
       const repeat = document.body.querySelector('#title-bar .repeat');
+      getFirstInFirstOutRepeat().then((isRepeat: boolean) => {
+        if (isRepeat && !repeat?.classList.contains('on')) {
+          repeat?.classList.add('on');
+        }
+      });
       repeat?.addEventListener('click', () => {
         repeat.classList.toggle('on');
         toggleFirstInFirstOutRepeat();

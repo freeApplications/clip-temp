@@ -11,6 +11,9 @@ const DEFAULT_SETTINGS: Settings.items = {
     maxsize: 100,
     backup: false,
   },
+  firstInFirstOut: {
+    keepItems: false,
+  },
 };
 
 export const getSettings = (): Settings.items => {
@@ -50,6 +53,18 @@ const setClipboardSettings: setClipboardSettings = (
     store.set(`settings.clipboard.${key}`, value);
   }
 };
+type setFirstInFirstOutSettings = {
+  (key: 'keepItems', value: boolean): void;
+};
+const setFirstInFirstOutSettings: setFirstInFirstOutSettings = (
+  key: 'keepItems',
+  value: boolean
+) => {
+  const { firstInFirstOut } = getSettings();
+  if (firstInFirstOut[key] !== value) {
+    store.set(`settings.firstInFirstOut.${key}`, value);
+  }
+};
 export const changeTheme = (theme: Settings.theme): void => {
   nativeTheme.themeSource = theme;
   setSettings('theme', theme);
@@ -79,3 +94,9 @@ ipcMain.on('change:clipboard-maxsize', (event, maxsize: number) => {
 ipcMain.on('change:clipboard-backup', (event, backup: boolean) => {
   setClipboardSettings('backup', backup);
 });
+ipcMain.on(
+  'change:first-in-first-out-keep-items',
+  (event, keepItems: boolean) => {
+    setFirstInFirstOutSettings('keepItems', keepItems);
+  }
+);

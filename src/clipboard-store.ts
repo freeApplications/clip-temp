@@ -166,10 +166,18 @@ ipcMain.on('change:paste-mode:normal', () => {
 ipcMain.on('change:paste-mode:fifo', () => {
   if (isPasteMode('fifo')) return;
   mode = 'fifo';
-  firstInFirstOut = [];
-  repeat = false;
+  if (!getSettings().firstInFirstOut.keepItems) {
+    firstInFirstOut = [];
+    repeat = false;
+  }
   ipcMain.emit('close:main-window');
   ipcMain.emit('show:sub-window');
+});
+ipcMain.handle('get:first-in-first-out', () => {
+  return firstInFirstOut;
+});
+ipcMain.handle('get:first-in-first-out-repeat', () => {
+  return repeat;
 });
 ipcMain.on('toggle:first-in-first-out-repeat', () => {
   if (!isPasteMode('fifo')) return;

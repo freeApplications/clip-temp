@@ -17,6 +17,8 @@ declare global {
       deliverFirstInFirstOut: (
         action: (firstInFirstOUt: string[]) => void
       ) => void;
+      getFirstInFirstOut: () => Promise;
+      getFirstInFirstOutRepeat: () => Promise;
       toggleFirstInFirstOutRepeat: () => void;
       // template
       saveTemplate: (
@@ -35,6 +37,7 @@ declare global {
       changeStartup: (startup: boolean) => void;
       changeClipboardMaxsize: (maxsize: number) => void;
       changeClipboardBackup: (backup: boolean) => void;
+      changeFirstInFirstOutKeepItems: (keepItems: boolean) => void;
       closeSettings: () => void;
       // window
       showEditMenu: (editable: EditActions[]) => void;

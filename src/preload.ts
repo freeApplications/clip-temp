@@ -29,6 +29,16 @@ contextBridge.exposeInMainWorld('api', {
       action(firstInFirstOUt)
     );
   },
+  getFirstInFirstOut: () => {
+    return ipcRenderer
+      .invoke('get:first-in-first-out')
+      .then((firstInFirstOUt: string[]) => firstInFirstOUt);
+  },
+  getFirstInFirstOutRepeat: () => {
+    return ipcRenderer
+      .invoke('get:first-in-first-out-repeat')
+      .then((repeat: boolean) => repeat);
+  },
   toggleFirstInFirstOutRepeat: () => {
     ipcRenderer.send('toggle:first-in-first-out-repeat');
   },
@@ -70,6 +80,9 @@ contextBridge.exposeInMainWorld('api', {
   },
   changeClipboardBackup: (backup: number) => {
     ipcRenderer.send('change:clipboard-backup', backup);
+  },
+  changeFirstInFirstOutKeepItems: (keepItems: boolean) => {
+    ipcRenderer.send('change:first-in-first-out-keep-items', keepItems);
   },
   closeSettings: () => {
     ipcRenderer.send('close:settings');
