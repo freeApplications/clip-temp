@@ -97,6 +97,10 @@ type State = {
   adjustHeight: number;
   isResizing: boolean;
 };
+type Priority = {
+  value: number;
+  index: number;
+};
 export default defineComponent({
   props: {
     modelValue: {
@@ -187,6 +191,25 @@ export default defineComponent({
       event.preventDefault();
       state.adjustHeight += event.movementY;
     };
+    const scrollToSelectedItem = () => {
+      if (listOfText.value.length === 0) return;
+      const refsList = list.value;
+      if (!refsList) return;
+      const item: Element = refsList
+        .querySelectorAll('.item')
+        .item(state.selectIndex);
+      const listTop = refsList.getBoundingClientRect().top;
+      const scrollBottom = refsList.scrollTop + refsList.clientHeight;
+      const itemRect = item.getBoundingClientRect();
+      const itemTop = itemRect.top - listTop + refsList.scrollTop;
+      const itemBottom = itemRect.bottom - listTop + refsList.scrollTop;
+      if (itemTop < refsList.scrollTop) {
+        refsList.scrollTop = itemTop - 1;
+      }
+      if (itemBottom > scrollBottom) {
+        refsList.scrollTop = itemBottom - refsList.clientHeight - 2;
+      }
+    };
 
     // watch
     const { changeEditable, closeMainWindow } = window.api;
@@ -238,22 +261,7 @@ export default defineComponent({
           default:
             return fixingFocus();
         }
-        const refsList = list.value;
-        if (!refsList) return;
-        const item: Element = refsList
-          .querySelectorAll('.item')
-          .item(state.selectIndex);
-        const listTop = refsList.getBoundingClientRect().top;
-        const scrollBottom = refsList.scrollTop + refsList.clientHeight;
-        const itemRect = item.getBoundingClientRect();
-        const itemTop = itemRect.top - listTop + refsList.scrollTop;
-        const itemBottom = itemRect.bottom - listTop + refsList.scrollTop;
-        if (itemTop < refsList.scrollTop) {
-          refsList.scrollTop = itemTop - 1;
-        }
-        if (itemBottom > scrollBottom) {
-          refsList.scrollTop = itemBottom - refsList.clientHeight - 2;
-        }
+        scrollToSelectedItem();
       }
     );
     watch(
@@ -272,7 +280,19 @@ export default defineComponent({
         }
       }
     );
-    watch(filterWord, () => (state.selectIndex = 0));
+    watch(filterWord, async () => {
+      const topPriority = await listOfText.value.reduce(
+        (top: Priority, item: ClipTemp, index: number): Priority => {
+          if (item.priority > top.value) {
+            return { value: item.priority, index };
+          }
+          return top;
+        },
+        { value: Number.MIN_SAFE_INTEGER, index: 0 }
+      );
+      state.selectIndex = topPriority.index;
+      scrollToSelectedItem();
+    });
 
     // lifecycle
     onMounted(() => {

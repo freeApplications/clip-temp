@@ -18,6 +18,9 @@ export default class Clipboard implements ClipTemp {
   get title(): FilterableText {
     return this.text;
   }
+  get priority(): number {
+    return this.text.priority;
+  }
   equals(clipboard: OriginClipTemp | Clipboard): boolean {
     if (clipboard instanceof Clipboard) {
       clipboard = clipboard.origin;

@@ -17,6 +17,9 @@ export default class Template implements ClipTemp {
   get time(): number {
     return this.origin.time;
   }
+  get priority(): number {
+    return this.text.priority;
+  }
   equals(template: OriginClipTemp | Template): boolean {
     if (template instanceof Template) {
       template = template.origin;

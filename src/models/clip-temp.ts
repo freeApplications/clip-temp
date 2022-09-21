@@ -6,6 +6,7 @@ export default interface ClipTemp {
   readonly time: number;
   readonly title: FilterableText;
   readonly text: FilterableText;
+  readonly priority: number;
   equals: (clipTemp: OriginClipTemp | ClipTemp) => boolean;
   compareTo: (clipTemp: OriginClipTemp | ClipTemp) => number;
   match: (filterWord: string) => boolean;
