@@ -20,6 +20,13 @@ export type PasteMode = 'normal' | 'fifo';
 
 export namespace Settings {
   export type theme = 'system' | 'light' | 'dark';
+  export type position =
+    | 'top-left'
+    | 'top-center'
+    | 'top-right'
+    | 'bottom-left'
+    | 'bottom-center'
+    | 'bottom-right';
   export type items = {
     theme: theme;
     startup: boolean;
@@ -29,6 +36,7 @@ export namespace Settings {
     };
     firstInFirstOut: {
       keepItems: boolean;
+      position: position;
     };
   };
   export type option = {

@@ -38,13 +38,30 @@
             v-model="settings.clipboard.backup"
             @update:modelValue="changeClipboardBackup"
           )
-      section
+      section.first-in-first-out
         h2 First-In First-Out
         .item
           | Keep items after changing to normal mode
           checkbox(
             v-model="settings.firstInFirstOut.keepItems"
             @update:modelValue="changeFirstInFirstOutKeepItems"
+          )
+        .item.position
+          | Display position
+          .direction vertical
+          radio-button(
+            v-model="firstInFirstOutPosition.vertical"
+            name="position-vertical"
+            :options="positionVerticalOptions"
+            @update:modelValue="changeFirstInFirstOutPosition"
+          )
+          .empty
+          .direction horizontal
+          radio-button(
+            v-model="firstInFirstOutPosition.horizontal"
+            name="position-horizontal"
+            :options="positionHorizontalOptions"
+            @update:modelValue="changeFirstInFirstOutPosition"
           )
 </template>
 
@@ -65,16 +82,29 @@ export default defineComponent({
   },
   setup(_, context) {
     // data
-    const settings = ref({});
+    const settings = ref({} as Settings.items);
+    const firstInFirstOutPosition = ref({});
     const loadSettings = async () => {
       const { getSettings } = window.api;
       settings.value = await getSettings();
+      const [vertical, horizontal] =
+        settings.value.firstInFirstOut.position.split('-');
+      firstInFirstOutPosition.value = { vertical, horizontal };
     };
     loadSettings();
     const themeOptions: Settings.option[] = [
       { text: 'System', value: 'system' },
       { text: 'Light', value: 'light' },
       { text: 'Dark', value: 'dark' },
+    ];
+    const positionVerticalOptions: Settings.option[] = [
+      { text: 'Top', value: 'top' },
+      { text: 'Bottom', value: 'bottom' },
+    ];
+    const positionHorizontalOptions: Settings.option[] = [
+      { text: 'Left', value: 'left' },
+      { text: 'Center', value: 'center' },
+      { text: 'Right', value: 'right' },
     ];
 
     // methods
@@ -84,13 +114,22 @@ export default defineComponent({
       changeClipboardMaxsize,
       changeClipboardBackup,
       changeFirstInFirstOutKeepItems,
+      resizeAndRepositionSubWindow,
     } = window.api;
     const close = () => context.emit('close');
+    const changeFirstInFirstOutPosition = () => {
+      const position = Object.values(firstInFirstOutPosition.value).join('-');
+      window.api.changeFirstInFirstOutPosition(position as Settings.position);
+      resizeAndRepositionSubWindow();
+    };
 
     return {
       // data
       settings,
+      firstInFirstOutPosition,
       themeOptions,
+      positionVerticalOptions,
+      positionHorizontalOptions,
       // methods
       close,
       changeTheme,
@@ -98,6 +137,7 @@ export default defineComponent({
       changeClipboardMaxsize,
       changeClipboardBackup,
       changeFirstInFirstOutKeepItems,
+      changeFirstInFirstOutPosition,
     };
   },
 });
@@ -164,6 +204,22 @@ export default defineComponent({
         &:not(:last-child) {
           margin-bottom: 1rem;
         }
+        &.first-in-first-out {
+          .position {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            grid-gap: 0.25rem 1rem;
+            .direction {
+              position: relative;
+              &::before {
+                position: absolute;
+                top: 0;
+                left: -0.75rem;
+                content: '･';
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -171,9 +227,24 @@ export default defineComponent({
 
 @media (max-width: 500px) {
   #settings {
-    main .list .item {
-      justify-content: center;
-      flex-wrap: wrap;
+    main .list {
+      .item {
+        padding-top: 0.125rem;
+        padding-left: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      section.first-in-first-out {
+        .position {
+          text-align: center;
+          justify-content: center;
+          grid-template-columns: auto;
+          grid-gap: 0;
+          .direction {
+            text-align: left;
+          }
+        }
+      }
     }
   }
 }

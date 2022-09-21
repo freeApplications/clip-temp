@@ -16,7 +16,7 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 import path from 'path';
 import { backup } from './clipboard-store';
 import './template-store';
-import './settings-store';
+import { getSettings } from './settings-store';
 import {
   createAppMenu,
   createEditMenu,
@@ -204,21 +204,30 @@ ipcMain.on('show:sub-window', async () => {
 ipcMain.on('show:first-in-first-out-menu', (event, index) => {
   createFirstInFirstOutMenu(index).popup();
 });
-ipcMain.on('resize:sub-window', (event, height) => {
+ipcMain.on('resize-and-reposition:sub-window', (event, height) => {
   if (!subWin || subWin.isDestroyed()) return;
+  if (height === undefined) [, height] = subWin.getSize();
   const { width, height: displayHeight } = screen.getPrimaryDisplay().workArea;
   if (isMoved) {
     subWin.setContentSize(SUB_WINDOW_WIDTH, height, true);
   } else {
-    subWin.setContentBounds(
-      {
-        x: width - SUB_WINDOW_WIDTH,
-        y: displayHeight - height,
-        width: SUB_WINDOW_WIDTH,
-        height,
-      },
-      true
-    );
+    const bounds = {
+      x: width - SUB_WINDOW_WIDTH,
+      y: displayHeight - height,
+      width: SUB_WINDOW_WIDTH,
+      height,
+    };
+    const { position } = getSettings().firstInFirstOut;
+    const [vertical, horizontal] = position.split('-');
+    if (horizontal === 'left') {
+      bounds.x = 0;
+    } else if (horizontal === 'center') {
+      bounds.x = (width - SUB_WINDOW_WIDTH) / 2;
+    }
+    if (vertical === 'top') {
+      bounds.y = 0;
+    }
+    subWin.setContentBounds(bounds, true);
   }
   if (!subWin.isVisible()) {
     subWin.showInactive();

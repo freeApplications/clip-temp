@@ -84,6 +84,9 @@ contextBridge.exposeInMainWorld('api', {
   changeFirstInFirstOutKeepItems: (keepItems: boolean) => {
     ipcRenderer.send('change:first-in-first-out-keep-items', keepItems);
   },
+  changeFirstInFirstOutPosition: (position: Settings.position) => {
+    ipcRenderer.send('change:first-in-first-out-position', position);
+  },
   closeSettings: () => {
     ipcRenderer.send('close:settings');
   },
@@ -110,8 +113,8 @@ contextBridge.exposeInMainWorld('api', {
   showFirstInFirstOutMenu: (index: number) => {
     ipcRenderer.send('show:first-in-first-out-menu', index);
   },
-  resizeSubWindow: (height: number) => {
-    ipcRenderer.send('resize:sub-window', height);
+  resizeAndRepositionSubWindow: (height?: number) => {
+    ipcRenderer.send('resize-and-reposition:sub-window', height);
   },
   closeSubWindow: () => {
     ipcRenderer.send('close:sub-window');

@@ -24,7 +24,7 @@ export default defineComponent({
   setup() {
     const bindState = (firstInFirstOUt: string[]) => {
       state.firstInFirstOut = firstInFirstOUt;
-      nextTick(resize);
+      nextTick(resizeAndReposition);
     };
     const { deliverFirstInFirstOut, getFirstInFirstOut } = window.api;
     deliverFirstInFirstOut(bindState);
@@ -37,9 +37,10 @@ export default defineComponent({
     const { firstInFirstOut } = toRefs(state);
 
     // methods
-    const { showFirstInFirstOutMenu, resizeSubWindow } = window.api;
-    const resize = () => {
-      resizeSubWindow(
+    const { showFirstInFirstOutMenu, resizeAndRepositionSubWindow } =
+      window.api;
+    const resizeAndReposition = () => {
+      resizeAndRepositionSubWindow(
         Math.floor(document.body.scrollHeight * window.devicePixelRatio)
       );
     };
@@ -63,7 +64,7 @@ export default defineComponent({
       });
       const close = document.body.querySelector('#close');
       close?.addEventListener('click', closeSubWindow);
-      resize();
+      resizeAndReposition();
     });
 
     return {

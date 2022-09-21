@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS: Settings.items = {
   },
   firstInFirstOut: {
     keepItems: false,
+    position: 'bottom-right',
   },
 };
 
@@ -24,6 +25,10 @@ export const getSettings = (): Settings.items => {
     clipboard: {
       ...DEFAULT_SETTINGS.clipboard,
       ...settings.clipboard,
+    },
+    firstInFirstOut: {
+      ...DEFAULT_SETTINGS.firstInFirstOut,
+      ...settings.firstInFirstOut,
     },
   };
 };
@@ -55,10 +60,11 @@ const setClipboardSettings: setClipboardSettings = (
 };
 type setFirstInFirstOutSettings = {
   (key: 'keepItems', value: boolean): void;
+  (key: 'position', value: Settings.position): void;
 };
 const setFirstInFirstOutSettings: setFirstInFirstOutSettings = (
-  key: 'keepItems',
-  value: boolean
+  key: 'keepItems' | 'position',
+  value: boolean | Settings.position
 ) => {
   const { firstInFirstOut } = getSettings();
   if (firstInFirstOut[key] !== value) {
@@ -98,5 +104,11 @@ ipcMain.on(
   'change:first-in-first-out-keep-items',
   (event, keepItems: boolean) => {
     setFirstInFirstOutSettings('keepItems', keepItems);
+  }
+);
+ipcMain.on(
+  'change:first-in-first-out-position',
+  (event, position: Settings.position) => {
+    setFirstInFirstOutSettings('position', position);
   }
 );

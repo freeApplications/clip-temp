@@ -38,6 +38,7 @@ declare global {
       changeClipboardMaxsize: (maxsize: number) => void;
       changeClipboardBackup: (backup: boolean) => void;
       changeFirstInFirstOutKeepItems: (keepItems: boolean) => void;
+      changeFirstInFirstOutPosition: (position: Settings.position) => void;
       closeSettings: () => void;
       // window
       showEditMenu: (editable: EditActions[]) => void;
@@ -48,7 +49,7 @@ declare global {
         action: (type: WindowEventType, ...args: unknown[]) => void
       ) => void;
       showFirstInFirstOutMenu: (index: number) => void;
-      resizeSubWindow: (height: number) => void;
+      resizeAndRepositionSubWindow: (height?: number) => void;
       closeSubWindow: () => void;
     };
   }
