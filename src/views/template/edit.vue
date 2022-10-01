@@ -1,12 +1,12 @@
 <template lang="pug">
 #template-edit
   .form
-    .text-wide title:
+    .text-wide {{ i18n.get('template.title') }}:
     input(
       type="text"
       v-model="title"
     )
-    .text-wide template:
+    .text-wide {{ i18n.get('template.contents') }}:
     .text-padding
       | {{ text }}
       textarea(
@@ -18,9 +18,13 @@
     button.danger(
       v-if="isEdit"
       @click="remove"
-    ) Delete
-    button.danger(@click="goIndex") Cancel
-    button(@click="save") Save
+    ) {{ i18n.get('edit.remove') }}
+    button.danger(
+      @click="goIndex"
+    ) {{ i18n.get('edit.cancel') }}
+    button(
+      @click="save"
+    ) {{ i18n.get('edit.save') }}
 </template>
 
 <script lang="ts">
@@ -28,6 +32,7 @@ import {
   defineComponent,
   reactive,
   toRefs,
+  inject,
   ref,
   computed,
   nextTick,
@@ -37,6 +42,7 @@ import { useRouter } from 'vue-router';
 import { Template } from '~/@types';
 import store from '~/store';
 import { HANDLING_KEYS } from '~/renderer-constants';
+import Internationalization from '~/internationalization';
 
 type State = {
   index: number | string;
@@ -61,6 +67,7 @@ export default defineComponent({
       text: '',
     });
     const { title, text } = toRefs(state);
+    const i18n = inject('i18n') as Internationalization;
 
     // refs
     const textarea = ref<HTMLTextAreaElement>();
@@ -121,6 +128,7 @@ export default defineComponent({
       // data
       title,
       text,
+      i18n,
       // refs
       textarea,
       // computed
@@ -154,10 +162,10 @@ export default defineComponent({
   .text-wide {
     transform: scale(1.25, 1);
     transform-origin: top left;
-    margin-top: 0.375rem;
     margin-right: 0.375rem;
     font-weight: bold;
     font-size: 0.75rem;
+    line-height: 1.375rem;
     letter-spacing: 0.5px;
   }
   input[type='text'],

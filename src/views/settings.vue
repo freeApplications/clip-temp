@@ -5,10 +5,10 @@
       @click="close"
     )
   main
-    h1 Settings
+    h1 {{ get('header') }}
     .list(v-if="Object.keys(settings).length")
       .item
-        | Window theme
+        | {{ get('theme.description') }}
         radio-button(
           v-model="settings.theme"
           name="theme"
@@ -16,15 +16,15 @@
           @update:modelValue="changeTheme"
         )
       .item
-        | Run application on system startup
+        | {{ get('startup') }}
         checkbox(
           v-model="settings.startup"
           @update:modelValue="changeStartup"
         )
       section
-        h2 Clipboard history
+        h2 {{ get('clipboard.header') }}
         .item
-          | Max size
+          | {{ get('clipboard.maxsize') }}
           range-slider(
             v-model="settings.clipboard.maxsize"
             @update:modelValue="changeClipboardMaxsize"
@@ -33,22 +33,22 @@
             :step="100"
           )
         .item
-          | Backup and restore
+          | {{ get('clipboard.backup') }}
           checkbox(
             v-model="settings.clipboard.backup"
             @update:modelValue="changeClipboardBackup"
           )
       section.first-in-first-out
-        h2 First-In First-Out
+        h2 {{ get('firstInFirstOut.header') }}
         .item
-          | Keep items after changing to normal mode
+          | {{ get('firstInFirstOut.keepItems') }}
           checkbox(
             v-model="settings.firstInFirstOut.keepItems"
             @update:modelValue="changeFirstInFirstOutKeepItems"
           )
         .item.position
-          | Display position
-          .direction vertical
+          | {{ get('firstInFirstOut.position.description') }}
+          .direction {{ get('firstInFirstOut.position.vertical') }}
           radio-button(
             v-model="firstInFirstOutPosition.vertical"
             name="position-vertical"
@@ -56,7 +56,7 @@
             @update:modelValue="changeFirstInFirstOutPosition"
           )
           .empty
-          .direction horizontal
+          .direction {{ get('firstInFirstOut.position.horizontal') }}
           radio-button(
             v-model="firstInFirstOutPosition.horizontal"
             name="position-horizontal"
@@ -66,12 +66,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, Ref, ref, inject } from 'vue';
 import ArrowBack from '~/components/icons/arrow-back.vue';
 import RadioButton from '~/components/forms/radio-button.vue';
 import Checkbox from '~/components/forms/checkbox.vue';
 import RangeSlider from '~/components/forms/range-slider.vue';
 import { Settings } from '~/@types';
+import Internationalization from '~/internationalization';
 
 export default defineComponent({
   components: {
@@ -81,6 +82,12 @@ export default defineComponent({
     RangeSlider,
   },
   setup(_, context) {
+    const i18n = inject('i18n') as Ref<Internationalization | undefined>;
+    const get = (key: string): string => {
+      if (i18n.value) return i18n.value.get(`settings.${key}`) as string;
+      return '';
+    };
+
     // data
     const settings = ref({} as Settings.items);
     const firstInFirstOutPosition = ref({});
@@ -93,18 +100,18 @@ export default defineComponent({
     };
     loadSettings();
     const themeOptions: Settings.option[] = [
-      { text: 'System', value: 'system' },
-      { text: 'Light', value: 'light' },
-      { text: 'Dark', value: 'dark' },
+      { text: get('theme.options.system'), value: 'system' },
+      { text: get('theme.options.light'), value: 'light' },
+      { text: get('theme.options.dark'), value: 'dark' },
     ];
     const positionVerticalOptions: Settings.option[] = [
-      { text: 'Top', value: 'top' },
-      { text: 'Bottom', value: 'bottom' },
+      { text: get('firstInFirstOut.position.options.top'), value: 'top' },
+      { text: get('firstInFirstOut.position.options.bottom'), value: 'bottom' },
     ];
     const positionHorizontalOptions: Settings.option[] = [
-      { text: 'Left', value: 'left' },
-      { text: 'Center', value: 'center' },
-      { text: 'Right', value: 'right' },
+      { text: get('firstInFirstOut.position.options.left'), value: 'left' },
+      { text: get('firstInFirstOut.position.options.center'), value: 'center' },
+      { text: get('firstInFirstOut.position.options.right'), value: 'right' },
     ];
 
     // methods
@@ -138,6 +145,7 @@ export default defineComponent({
       changeClipboardBackup,
       changeFirstInFirstOutKeepItems,
       changeFirstInFirstOutPosition,
+      get,
     };
   },
 });

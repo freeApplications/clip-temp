@@ -1,0 +1,89 @@
+{
+  "menu": {
+    "file": "File",
+    "settings": "Settings",
+    "quit": "Exit",
+    "edit": "Edit",
+    "mode": "Mode",
+    "view": "View",
+    "reload": "Reload",
+    "toggleDevTools": "Toggle Developer Tools",
+    "resetZoom": "Actual Size",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "toggleFullscreen": "Toggle Full Screen",
+    "window": "Window",
+    "theme": "Theme",
+    "minimize": "Minimize",
+    "close": "Close",
+    "help": "Help",
+    "about": "About"
+  },
+  "tabs": {
+    "clipboard": "clipboard",
+    "template": "template"
+  },
+  "mode": {
+    "normal": "Normal",
+    "fifo": "First-In First-Out"
+  },
+  "edit": {
+    "paste": "Paste",
+    "add": "Add",
+    "edit": "Edit",
+    "save": "Save",
+    "remove": "Delete",
+    "cancel": "Cancel"
+  },
+  "clipboard": {
+    "empty": "Clipboard history is empty",
+    "notFound": "No matches found"
+  },
+  "template": {
+    "empty": "Template is empty",
+    "notFound": "No matches found",
+    "title": "title",
+    "contents": "template"
+  },
+  "firstInFirstOut": {
+    "empty": "No items...",
+    "paste": "Paste to delete",
+    "remove": "Delete",
+    "first": "Move to first",
+    "up": "Up",
+    "down": "Down"
+  },
+  "settings": {
+    "header": "Settings",
+    "theme": {
+      "description": "Window theme",
+      "options": {
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      }
+    },
+    "startup": "Run application on system startup",
+    "clipboard": {
+      "header": "Clipboard history",
+      "maxsize": "Max size",
+      "backup": "Backup and restore"
+    },
+    "firstInFirstOut": {
+      "header": "First-In First-Out",
+      "keepItems": "Keep items after changing to normal mode",
+      "position": {
+        "description": "Display position",
+        "vertical": "vertical",
+        "horizontal": "horizontal",
+        "options": {
+          "top": "Top",
+          "bottom": "Bottom",
+          "left": "Left",
+          "center": "Center",
+          "right": "Right"
+        }
+      }
+    }
+  }
+}

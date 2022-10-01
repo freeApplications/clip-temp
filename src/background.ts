@@ -48,14 +48,15 @@ async function createMainWindow() {
   }
   // Create the browser window.
   mainWin = createWindow();
-  Menu.setApplicationMenu(createAppMenu(mainWin.webContents));
+  Menu.setApplicationMenu(await createAppMenu(mainWin.webContents));
+  const params = `?locale=${app.getLocale()}`;
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    await mainWin.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
+    await mainWin.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL}${params}`);
   } else {
     createProtocol('app');
     // Load the index.html when not in development
-    await mainWin.loadURL('app://./index.html');
+    await mainWin.loadURL(`app://./index.html${params}`);
   }
   mainWin.on('close', withoutCloseToHide);
   mainWin.on('session-end', backup);
@@ -74,6 +75,7 @@ async function createSubWindow() {
   if (subWin && !subWin.isDestroyed()) return;
   // Create the browser window.
   subWin = createWindow({
+    height: 0,
     alwaysOnTop: true,
     resizable: false,
     minimizable: false,
@@ -83,14 +85,15 @@ async function createSubWindow() {
     skipTaskbar: true,
   });
   subWin.removeMenu();
+  const params = `?locale=${app.getLocale()}`;
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await subWin.loadURL(
-      process.env.WEBPACK_DEV_SERVER_URL + 'first-in-first-out'
+      `${process.env.WEBPACK_DEV_SERVER_URL}first-in-first-out${params}`
     );
   } else {
     // Load the first-in-first-out.html when not in development
-    await subWin.loadURL('app://./first-in-first-out.html');
+    await subWin.loadURL(`app://./first-in-first-out.html${params}`);
   }
   subWin.on('moved', () => (isMoved = true));
   subWin.on('closed', () => changePasteMode('normal'));

@@ -1,12 +1,15 @@
 <template lang="pug">
 #nav(v-show="!showSettings")
-  ul.tab-list(ref="tabList")
+  ul.tab-list(
+    ref="tabList"
+    v-if="i18n"
+  )
     li.tab-item
-      router-link(to="/") clipboard
+      router-link(to="/") {{ i18n.get('tabs.clipboard') }}
     li.tab-item
       router-link(
         :to="isTemplateEdit ? route.path : '/template'"
-      ) template
+      ) {{ i18n.get('tabs.template') }}
 router-view.contents(
   v-if="!isReloading || showSettings"
   v-show="!showSettings"
@@ -21,6 +24,8 @@ settings(
 import {
   defineComponent,
   ref,
+  Ref,
+  provide,
   computed,
   watch,
   nextTick,
@@ -31,6 +36,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { HANDLING_KEYS } from '~/renderer-constants';
 import Settings from '~/views/settings.vue';
 import store from '~/store';
+import Internationalization from '~/internationalization';
 
 export default defineComponent({
   components: {
@@ -43,6 +49,11 @@ export default defineComponent({
     // data
     const isReloading = ref(false);
     const showSettings = ref(false);
+    const i18n: Ref<Internationalization | undefined> = ref();
+    const asyncData = async () =>
+      (i18n.value = await Internationalization.factory());
+    asyncData();
+    provide('i18n', i18n);
 
     // refs
     const tabList = ref<HTMLUListElement>();
@@ -121,6 +132,7 @@ export default defineComponent({
       // data
       isReloading,
       showSettings,
+      i18n,
       route,
       // refs
       tabList,
@@ -260,16 +272,13 @@ body {
         display: inline-block;
         width: 100%;
         height: 100%;
-        padding: 3px;
+        margin-bottom: 2px;
+        padding-top: 0;
+        border: 1px solid;
+        border-radius: 0.5rem 0.5rem 0 0;
         font-weight: bold;
+        line-height: 1.375rem;
         text-decoration: none;
-        &.router-link-active,
-        &:hover {
-          padding: 2px;
-          margin-bottom: 2px;
-          border: 1px solid;
-          border-radius: 0.5rem 0.5rem 0 0;
-        }
       }
     }
   }
@@ -284,10 +293,11 @@ body {
     border-bottom-color: $light-border;
     background-color: $light-background-main;
     .tab-list .tab-item a {
+      border-color: $light-border;
+      background-color: $light-background-inactive;
       color: $light-font-inactive;
       &.router-link-active,
       &:hover {
-        border-color: $light-border;
         border-bottom-color: $light-background;
         background-color: $light-background;
       }
@@ -305,10 +315,11 @@ body {
     border-bottom-color: $dark-border;
     background-color: $dark-background-main;
     .tab-list .tab-item a {
+      border-color: $dark-border;
+      background-color: $dark-background-inactive;
       color: $dark-font-inactive;
       &.router-link-active,
       &:hover {
-        border-color: $dark-border;
         border-bottom-color: $dark-background;
         background-color: $dark-background;
       }

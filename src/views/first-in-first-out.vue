@@ -11,19 +11,18 @@
           v-for='textPerLine in text.split(/\\r?\\n/)'
         ) {{ textPerLine }}
   .text(v-else)
-    | no items...
+    template(v-if="i18n")
+      | {{ i18n.get('firstInFirstOut.empty') }}
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, reactive, toRefs, onMounted } from 'vue';
+import { defineComponent, nextTick, Ref, ref, onMounted } from 'vue';
+import Internationalization from '~/internationalization';
 
-type State = {
-  firstInFirstOut: string[];
-};
 export default defineComponent({
   setup() {
     const bindState = (firstInFirstOUt: string[]) => {
-      state.firstInFirstOut = firstInFirstOUt;
+      firstInFirstOut.value = firstInFirstOUt;
       nextTick(resizeAndReposition);
     };
     const { deliverFirstInFirstOut, getFirstInFirstOut } = window.api;
@@ -31,10 +30,13 @@ export default defineComponent({
     getFirstInFirstOut().then(bindState);
 
     // data
-    const state = reactive<State>({
-      firstInFirstOut: [],
-    });
-    const { firstInFirstOut } = toRefs(state);
+    const firstInFirstOut = ref<string[]>([]);
+    const i18n: Ref<Internationalization | undefined> = ref();
+    const asyncData = async () => {
+      i18n.value = await Internationalization.factory();
+      await nextTick(resizeAndReposition);
+    };
+    asyncData();
 
     // methods
     const { showFirstInFirstOutMenu, resizeAndRepositionSubWindow } =
@@ -70,6 +72,7 @@ export default defineComponent({
     return {
       // date
       firstInFirstOut,
+      i18n,
       // methods
       showFirstInFirstOutMenu,
     };

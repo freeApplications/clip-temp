@@ -9,91 +9,98 @@ import path from 'path';
 import { EditActions, PasteMode, Settings } from '~/@types';
 import { isPasteMode, firstInFirstOutOperator } from './clipboard-store';
 import { getSettings, changeTheme } from './settings-store';
+import Internationalization from './internationalization';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+let i18n: Internationalization;
+const initialize = async () => {
+  if (i18n) return;
+  i18n = await Internationalization.factory(app.getLocale());
+};
+
 const createMenuTemplate = (sender: WebContents): MenuItemOptions[] => [
   {
-    label: 'File',
+    label: i18n.get('menu.file'),
     submenu: [
       {
-        label: 'Settings',
+        label: i18n.get('menu.settings'),
         accelerator: 'CommandOrControl+Alt+S',
         click: () => ipcMain.emit('show:settings'),
       },
       {
-        label: 'Exit',
+        label: i18n.get('menu.quit'),
         role: 'quit',
       },
     ],
   },
   {
     id: 'edit',
-    label: 'Edit',
+    label: i18n.get('menu.edit'),
     submenu: createEditMenuTemplate(sender),
   },
   {
-    label: 'View',
+    label: i18n.get('menu.view'),
     submenu: [
       {
-        label: 'Reload',
+        label: i18n.get('menu.reload'),
         accelerator: 'F5',
         click: () => sender.send('store:window-event', 'reload'),
       },
       {
-        label: 'Toggle Developer Tools',
+        label: i18n.get('menu.toggleDevTools'),
         accelerator: 'F12',
         role: 'toggleDevTools',
       },
       { type: 'separator' },
       {
-        label: 'Actual Size',
+        label: i18n.get('menu.resetZoom'),
         accelerator: 'CommandOrControl+0',
         role: 'resetZoom',
       },
       {
-        label: 'Zoom In',
+        label: i18n.get('menu.zoomIn'),
         accelerator: 'CommandOrControl+Plus',
         role: 'zoomIn',
       },
       {
-        label: 'Zoom Out',
+        label: i18n.get('menu.zoomOut'),
         accelerator: 'CommandOrControl+-',
         role: 'zoomOut',
       },
       { type: 'separator' },
       {
-        label: 'Toggle Full Screen',
+        label: i18n.get('menu.toggleFullscreen'),
         accelerator: 'F11',
         role: 'togglefullscreen',
       },
     ],
   },
   {
-    label: 'Window',
+    label: i18n.get('menu.window'),
     submenu: [
       {
         id: 'theme',
-        label: 'Theme',
+        label: i18n.get('menu.theme'),
         submenu: createThemeMenuTemplate(),
       },
       {
-        label: 'Minimize',
+        label: i18n.get('menu.minimize'),
         accelerator: 'CommandOrControl+M',
         role: 'minimize',
       },
       {
-        label: 'Close',
+        label: i18n.get('menu.close'),
         accelerator: 'Esc',
         role: 'close',
       },
     ],
   },
   {
-    label: 'Help',
+    label: i18n.get('menu.help'),
     submenu: [
       {
-        label: 'About',
+        label: i18n.get('menu.about', app.getName()),
         role: 'about',
       },
     ],
@@ -106,29 +113,34 @@ const createEditMenuTemplate = (
   isContextMenu = false
 ): MenuItemOptions[] => [
   {
-    label: 'Mode',
+    id: 'mode',
+    label: i18n.get('menu.mode'),
     submenu: createPasteModeMenuTemplate(),
     visible: editable.length === 0,
   },
   {
-    label: 'Paste',
+    id: 'paste',
+    label: i18n.get('edit.paste'),
     accelerator: 'Enter',
     click: () => sender.send('store:window-event', 'paste'),
     enabled: editable.includes('paste'),
   },
   {
-    label: 'Add',
+    id: 'add',
+    label: i18n.get('edit.add'),
     click: () => sender.send('store:window-event', 'add'),
     enabled: editable.includes('add'),
     visible: !isContextMenu,
   },
   {
-    label: 'Edit',
+    id: 'edit',
+    label: i18n.get('edit.edit'),
     click: () => sender.send('store:window-event', 'edit'),
     enabled: editable.includes('edit'),
   },
   {
-    label: 'Delete',
+    id: 'remove',
+    label: i18n.get('edit.remove'),
     accelerator: 'Delete',
     click: () => sender.send('store:window-event', 'remove'),
     enabled: editable.includes('remove'),
@@ -137,15 +149,15 @@ const createEditMenuTemplate = (
 
 const createPasteModeMenuTemplate = (): MenuItemOptions[] => [
   {
-    id: 'mode-normal',
-    label: 'Normal',
+    id: 'normal',
+    label: i18n.get('mode.normal'),
     type: 'checkbox' as const,
     checked: isPasteMode('normal'),
     click: () => changePasteMode('normal'),
   },
   {
-    id: 'mode-fifo',
-    label: 'First-In First-Out',
+    id: 'fifo',
+    label: i18n.get('mode.fifo'),
     type: 'checkbox' as const,
     checked: isPasteMode('fifo'),
     click: () => changePasteMode('fifo'),
@@ -155,11 +167,11 @@ const createPasteModeMenuTemplate = (): MenuItemOptions[] => [
 export const changePasteMode = (mode: PasteMode): void => {
   const menu = Menu.getApplicationMenu();
   if (menu === null) return;
-  for (const item of ['normal', 'fifo']) {
-    const menuItem = menu.getMenuItemById(`mode-${item}`);
-    if (menuItem === null) continue;
-    menuItem.checked = mode === item;
-  }
+  const pasteModeMenu = menu.getMenuItemById('mode');
+  if (pasteModeMenu === null || !pasteModeMenu.submenu) return;
+  pasteModeMenu.submenu.items.forEach((item) => {
+    item.checked = mode === item.id;
+  });
   ipcMain.emit(`change:paste-mode:${mode}`);
 };
 
@@ -169,9 +181,9 @@ ipcMain.on('change:editable', (event, editable: EditActions[]) => {
   const editMenu = menu.getMenuItemById('edit');
   if (editMenu === null || !editMenu.submenu) return;
   editMenu.submenu.items.forEach((item) => {
-    const label = item.label.toLowerCase();
-    if (label === 'mode') return;
-    item.enabled = editable.includes(label as never);
+    const { id } = item;
+    if (id === 'mode') return;
+    item.enabled = editable.includes(id as never);
   });
 });
 
@@ -181,28 +193,29 @@ const changeThemMenu = (theme: Settings.theme): void => {
   if (menu === null) return;
   const themeMenu = menu.getMenuItemById('theme');
   if (themeMenu === null || themeMenu.submenu === undefined) return;
-  themeMenu.submenu.items.forEach(
-    (item) => (item.checked = item.label.toLowerCase() === theme)
-  );
+  themeMenu.submenu.items.forEach((item) => (item.checked = item.id === theme));
 };
 
 const createThemeMenuTemplate = (): MenuItemOptions[] => {
   const { theme } = getSettings();
   return [
     {
-      label: 'System',
+      id: 'system',
+      label: i18n.get('settings.theme.options.system'),
       type: 'checkbox' as const,
       checked: theme === 'system',
       click: () => changeThemMenu('system'),
     },
     {
-      label: 'Light',
+      id: 'light',
+      label: i18n.get('settings.theme.options.light'),
       type: 'checkbox' as const,
       checked: theme === 'light',
       click: () => changeThemMenu('light'),
     },
     {
-      label: 'Dark',
+      id: 'dark',
+      label: i18n.get('settings.theme.options.dark'),
       type: 'checkbox' as const,
       checked: theme === 'dark',
       click: () => changeThemMenu('dark'),
@@ -210,7 +223,8 @@ const createThemeMenuTemplate = (): MenuItemOptions[] => {
   ];
 };
 
-export const createAppMenu = (sender: WebContents): Menu => {
+export const createAppMenu = async (sender: WebContents): Promise<Menu> => {
+  await initialize();
   app.setAboutPanelOptions({
     applicationName: app.getName(),
     applicationVersion: `Version: ${app.getVersion()}`,
@@ -237,26 +251,26 @@ export const createFirstInFirstOutMenu = (index: number): Menu => {
   const { paste, move, remove, isLast } = firstInFirstOutOperator;
   return Menu.buildFromTemplate([
     {
-      label: 'Paste to delete',
+      label: i18n.get('firstInFirstOut.paste'),
       click: paste,
       visible: index === 0,
     },
     {
-      label: 'Delete',
+      label: i18n.get('firstInFirstOut.remove'),
       click: () => remove(index),
     },
     {
-      label: 'Move to first',
+      label: i18n.get('firstInFirstOut.first'),
       click: () => move(index, 0),
       visible: index > 0,
     },
     {
-      label: 'Up',
+      label: i18n.get('firstInFirstOut.up'),
       click: () => move(index, index - 1),
       visible: index > 0,
     },
     {
-      label: 'Down',
+      label: i18n.get('firstInFirstOut.down'),
       click: () => move(index, index + 1),
       visible: !isLast(index),
     },

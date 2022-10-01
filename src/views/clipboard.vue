@@ -9,13 +9,14 @@ text-list(
     button.danger(
       @click="remove"
       :disabled="selectIndex < 0 || selectIndex >= histories.length"
-    ) Delete
+    ) {{ i18n.get('edit.remove') }}
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs, inject } from 'vue';
 import TextList from '~/components/text-list.vue';
 import Clipboard from '~/models/clipboard';
+import Internationalization from '~/internationalization';
 
 type State = {
   histories: Clipboard[];
@@ -38,6 +39,7 @@ export default defineComponent({
       selectIndex: 0,
     });
     const { histories, selectIndex } = toRefs(state);
+    const i18n = inject('i18n') as Internationalization;
 
     // methods
     const paste = () => api.pasteClipboard(state.selectIndex);
@@ -50,6 +52,7 @@ export default defineComponent({
       // data
       histories,
       selectIndex,
+      i18n,
       // methods
       paste,
       remove,

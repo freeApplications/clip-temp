@@ -11,21 +11,22 @@ text-list(
     button.danger(
       @click="remove"
       :disabled="!isEditable"
-    ) Delete
+    ) {{ i18n.get('edit.remove') }}
     button(
       @click="add"
-    ) Add
+    ) {{ i18n.get('edit.add') }}
     button(
       @click="edit"
       :disabled="!isEditable"
-    ) Edit
+    ) {{ i18n.get('edit.edit') }}
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, computed } from 'vue';
+import { defineComponent, reactive, toRefs, inject, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import TextList from '~/components/text-list.vue';
 import Template from '~/models/template';
+import Internationalization from '~/internationalization';
 
 type State = {
   templates: Template[];
@@ -49,6 +50,7 @@ export default defineComponent({
       selectIndex: 0,
     });
     const { templates, selectIndex } = toRefs(state);
+    const i18n = inject('i18n') as Internationalization;
 
     // computed
     const isEditable = computed(
@@ -68,6 +70,7 @@ export default defineComponent({
       // data
       templates,
       selectIndex,
+      i18n,
       // computed
       isEditable,
       // methods

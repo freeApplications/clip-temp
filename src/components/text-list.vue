@@ -35,9 +35,9 @@
           v-for='(textPerLine, index) in partOfText.split(/\\r?\\n/)'
           :class="{ highlight: partOfText.isMatched, 'new-line': index > 0 }"
         ) {{ textPerLine }}
-    .empty(v-if="isEmpty")
-      template(v-if="filterWord.length") No matches found
-      template(v-else) {{ isClipboard ? 'Clipboard history' : 'Template' }} is empty
+    .empty(v-if="isEmpty && i18n")
+      template(v-if="filterWord.length") {{ i18n.get(`${isClipboard ? 'clipboard': 'template'}.notFound`) }}
+      template(v-else) {{ i18n.get(`${isClipboard ? 'clipboard': 'template'}.empty`) }}
   .separator.cursor-resize(
     @mousedown="isResizing = true"
   )
@@ -58,14 +58,14 @@
           v-for="partOfText in listOfText[selectIndex].text.parts"
           :class="{ highlight: partOfText.isMatched }"
         ) {{ partOfText }}
-  .footer
+  .footer(v-if="i18n")
     .left
       slot(name="footer")
     .right
       button(
         :disabled="!isSelected"
         @click="paste"
-      ) Paste
+      ) {{ i18n.get('edit.paste') }}
 </template>
 
 <script lang="ts">
@@ -75,6 +75,7 @@ import {
   reactive,
   ref,
   toRefs,
+  inject,
   computed,
   ComputedRef,
   watch,
@@ -90,6 +91,7 @@ import { HANDLING_KEYS } from '~/renderer-constants';
 import store from '~/store';
 import { useRoute } from 'vue-router';
 import { EditActions } from '~/@types';
+import Internationalization from '~/internationalization';
 
 type State = {
   filterWord: string;
@@ -127,6 +129,7 @@ export default defineComponent({
       isResizing: false,
     });
     const { filterWord, selectIndex, adjustHeight, isResizing } = toRefs(state);
+    const i18n = inject('i18n') as Internationalization;
 
     // refs
     const input = ref<HTMLDivElement>();
@@ -306,6 +309,7 @@ export default defineComponent({
       selectIndex,
       adjustHeight,
       isResizing,
+      i18n,
       // refs
       'refs.input': input,
       'refs.list': list,

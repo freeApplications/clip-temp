@@ -1,0 +1,89 @@
+{
+  "menu": {
+    "file": "ファイル",
+    "settings": "設定",
+    "quit": "終了",
+    "edit": "編集",
+    "mode": "モード",
+    "view": "表示",
+    "reload": "再読み込み",
+    "toggleDevTools": "デベロッパーツール",
+    "resetZoom": "等倍",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "toggleFullscreen": "全画面表示",
+    "window": "ウィンドウ",
+    "theme": "テーマ",
+    "minimize": "最小化",
+    "close": "閉じる",
+    "help": "ヘルプ",
+    "about": "{0} について"
+  },
+  "tabs": {
+    "clipboard": "クリップボード",
+    "template": "テンプレート"
+  },
+  "mode": {
+    "normal": "Normal",
+    "fifo": "First-In First-Out"
+  },
+  "edit": {
+    "paste": "貼り付け",
+    "add": "追加",
+    "edit": "編集",
+    "save": "保存",
+    "remove": "削除",
+    "cancel": "キャンセル"
+  },
+  "clipboard": {
+    "empty": "クリップボード履歴がありません",
+    "notFound": "該当するクリップボード履歴がありません"
+  },
+  "template": {
+    "empty": "テンプレートがありません",
+    "notFound": "該当するテンプレートがありません",
+    "title": "タイトル",
+    "contents": "テンプレート"
+  },
+  "firstInFirstOut": {
+    "empty": "履歴がありません...",
+    "paste": "貼り付け",
+    "remove": "削除",
+    "first": "先頭へ",
+    "up": "上へ",
+    "down": "下へ"
+  },
+  "settings": {
+    "header": "設定",
+    "theme": {
+      "description": "ウィンドウテーマ",
+      "options": {
+        "system": "システム",
+        "light": "ライト",
+        "dark": "ダーク"
+      }
+    },
+    "startup": "システム起動時に自動的に実行する",
+    "clipboard": {
+      "header": "クリップボード履歴",
+      "maxsize": "最大数",
+      "backup": "終了時に保存して次回実行時に復元する"
+    },
+    "firstInFirstOut": {
+      "header": "First-In First-Out",
+      "keepItems": "Normalモードに戻しても履歴を維持する",
+      "position": {
+        "description": "表示位置",
+        "vertical": "縦",
+        "horizontal": "横",
+        "options": {
+          "top": "上",
+          "bottom": "下",
+          "left": "左",
+          "center": "中央",
+          "right": "右"
+        }
+      }
+    }
+  }
+}
